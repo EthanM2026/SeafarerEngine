@@ -1,2 +1,2 @@
 # SeafarerEngine
-An engine for ocean-themes games
+An engine for ocean-themed games
