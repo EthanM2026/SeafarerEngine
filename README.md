@@ -3,9 +3,9 @@
 <img width="256" height="256" alt="552999850-f23f906d-4f55-4a0c-8595-0d0a695a00ee" src="https://github.com/user-attachments/assets/ec59b909-a1e6-4277-8ec4-3624576d24f0" />
 "The Seafarer Engine" is a low-footprint, game engine for Linux. It's an answer to the Quake engine, licensed as MIT instead of GPL.
 Use it to create a wide variety of games, including:
-####FPS Games
-Air-to-air combat games
-Driving games
+### FPS Games
+### Air-to-air combat games
+### Driving games
 
 # Main Features
 ### Low Footprint
