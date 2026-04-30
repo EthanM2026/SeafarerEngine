@@ -1,12 +1,23 @@
-# SeafarerEngine
-![seafarer engine](https://github.com/user-attachments/assets/f23f906d-4f55-4a0c-8595-0d0a695a00ee)
-Seafarer Engine is a low-footprint engine modeled after the game engines of the late 1990s. It produces executables under 1 Megabyte, and features:
--256x256 BMP textures, with support for chroma keying and transparency maps
--Keyframe animation, using 16-bit floats for high-quality models
--AABB, Sphere, Mesh and Ray collision detection
--Analog TV Tuner mechanics
--Car mechanics
--Airplane mechanics
--A 16-bit emulator
--Support for any language using its own codepages and encodings
--The ability to load "arcs", self-contained collections of levels
+<img width="256" height="256" alt="552999850-f23f906d-4f55-4a0c-8595-0d0a695a00ee" src="https://github.com/user-attachments/assets/ec59b909-a1e6-4277-8ec4-3624576d24f0" />
+# Seafarer Engine
+"The Seafarer Engine" is a low-footprint, game engine for Linux. It's an answer to the Quake engine, licensed as MIT instead of GPL.
+Use it to create a wide variety of games, including:
+FPS Games
+Air-to-air combat games
+Driving games
+
+# Main Features
+### Low Footprint
+The engine can create executables barely larger than 1MB.
+### Custom File Formats
+The engine uses its own file formats, licensed under MIT:
+-Seafarer Engine Image (SEI)
+-Seafarer Engine 3D Mesh (SE3)
+-Transparency Map (TRM)
+### Controller Support
+The engine can use any controller compatible with xboxdrv for Linux. 
+It can also use the keyboard and mouse.
+### 16-bit Processor Emulator
+Create your own in-game computer systems for added immersion.
+### Billboard Images
+Save memory and CPU time by using billboarded images instead of 3D meshes.
