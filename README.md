@@ -18,3 +18,5 @@ It can also use the keyboard and mouse.
 Create your own in-game computer systems for added immersion.
 ### Billboard Images
 Save memory and CPU time by using billboarded images instead of 3D meshes.
+### Neural Networks
+Support for many neural network architectures, including LSTM, DNN, and CNN.
