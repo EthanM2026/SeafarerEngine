@@ -3,7 +3,7 @@
 Use it to create a wide variety of games, including FPS games, air-to-air combat games, and driving games.
 
 # Main Features
-### Low Footprint
+### Small Footprint
 The engine can create executables barely larger than 1MB.
 ### Custom File Formats
 The engine uses its own file formats, licensed under MIT:
