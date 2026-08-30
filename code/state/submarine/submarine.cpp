@@ -28,6 +28,13 @@ struct _Player_Submarine* Create_Player()
 };
 void Initialize_On_Foot_Player(struct _Player_Submarine* On_Foot_Player, const char* Character_Filepath, float x, float y, float z)
 {
+    On_Foot_Player->Is_On_A_Ship = false;
+    On_Foot_Player->On_This_Ship = -1;
+
+    On_Foot_Player->Current_Location = LOCATION_ON_FOOT;
+    On_Foot_Player->Visible = true;
+    On_Foot_Player->Injurable = true;
+
     On_Foot_Player->Current_Health = 100;
 
     On_Foot_Player->AffectedByGravity = true;
@@ -191,6 +198,9 @@ void Weapon_Round_Collision_Detection(struct _Player_Submarine* On_Foot_Player, 
 
 void Handle_Collision_Detection(struct _Player_Submarine* On_Foot_Player, struct _On_Foot_Region* On_Foot_Region, struct _On_Foot_Region_File* On_Foot_Region_File)
 {
+    On_Foot_Player->Apply_Motion = true;
+    On_Foot_Player->Apply_Gravity = true;
+
     bool Colliding_With_A_Slope_Ground = false;
 
     float slopeThreshold = 0.70710678118; // cos(45 degrees)
@@ -201,9 +211,10 @@ void Handle_Collision_Detection(struct _Player_Submarine* On_Foot_Player, struct
         if(Check_If_AABB_Detects_Mesh(&On_Foot_Player->Feet_Collision_Geometry,On_Foot_Region->Slopes[j]->Collision_Mesh,On_Foot_Player->displacement.x,On_Foot_Player->displacement.y,On_Foot_Player->displacement.z))
         {
             // Displace the AABB out of the triangle
-            On_Foot_Player->x += On_Foot_Player->Feet_Collision_Geometry.collisionNormal.x * On_Foot_Player->Feet_Collision_Geometry.Penetration_Depth;
-            On_Foot_Player->y += On_Foot_Player->Feet_Collision_Geometry.collisionNormal.y * On_Foot_Player->Feet_Collision_Geometry.Penetration_Depth;
-            On_Foot_Player->z += On_Foot_Player->Feet_Collision_Geometry.collisionNormal.z * GRAVITY*20;
+                On_Foot_Player->x += On_Foot_Player->Feet_Collision_Geometry.collisionNormal.x * On_Foot_Player->Feet_Collision_Geometry.Penetration_Depth;
+                On_Foot_Player->y += On_Foot_Player->Feet_Collision_Geometry.collisionNormal.y * On_Foot_Player->Feet_Collision_Geometry.Penetration_Depth;
+                On_Foot_Player->z += On_Foot_Player->Feet_Collision_Geometry.collisionNormal.z * GRAVITY*20;
+
 
 
 if (On_Foot_Player->Feet_Collision_Geometry.collisionNormal.z >= flatThreshold) {
@@ -255,6 +266,7 @@ for(int j = 0; j < On_Foot_Region_File->Number_Of_Vertical_Collision_Geometries;
             }
             On_Foot_Player->On_The_Ground = true;
             On_Foot_Player->displacement.z = 0;
+            On_Foot_Player->Apply_Gravity = false;
         }
 
         else if(!Check_If_AABB_Detects_Mesh(&On_Foot_Player->Feet_Collision_Geometry,On_Foot_Region->Ceilings[j]->Collision_Mesh,On_Foot_Player->displacement.x,On_Foot_Player->displacement.y,On_Foot_Player->displacement.z))
@@ -269,7 +281,7 @@ for(int j = 0; j < On_Foot_Region_File->Number_Of_Vertical_Collision_Geometries;
 
         if(Check_If_AABB_Detects_Mesh(&On_Foot_Player->Head_Collision_Geometry,On_Foot_Region->Ceilings[j]->Collision_Mesh,On_Foot_Player->displacement.x,On_Foot_Player->displacement.y,On_Foot_Player->displacement.z))
         {
-            On_Foot_Player->displacement.z = 0;
+            On_Foot_Player->displacement.z = 0; //Need test for ceiling collision
             ////printf("Colliding with Ceiling!\n");
         }
 
@@ -287,6 +299,7 @@ for(int j = 0; j < On_Foot_Region_File->Number_Of_Vertical_Collision_Geometries;
         {
             On_Foot_Player->displacement.x = 0;
             On_Foot_Player->displacement.y = 0;
+            On_Foot_Player->Apply_Motion = false;
             ////printf("Colliding with wall!\n");
         }
 
@@ -310,6 +323,7 @@ for(int j = 0; j < On_Foot_Region_File->Number_Of_Vertical_Collision_Geometries;
         {
             On_Foot_Player->displacement.x = 0;
             On_Foot_Player->displacement.y = 0;
+            On_Foot_Player->Apply_Motion = false;
             ////printf("Colliding with Wall!\n");
         }
 
@@ -319,22 +333,13 @@ for(int j = 0; j < On_Foot_Region_File->Number_Of_Vertical_Collision_Geometries;
         }
     }
 
+Submarine_Vehicle_Collision_Detection(On_Foot_Player, On_Foot_Region, On_Foot_Region_File);
    Door_Collision_Detection(On_Foot_Player, On_Foot_Region, On_Foot_Region_File);
    Weapon_Round_Collision_Detection(On_Foot_Player, On_Foot_Region, On_Foot_Region_File);
 }
 
-void Process_Player(struct _Seafarer_Engine_Network_Client* SENC, int Connection_Status, struct _Player_Submarine* On_Foot_Player, struct _On_Foot_Region* On_Foot_Region, struct _On_Foot_Region_File* On_Foot_Region_File)
+void Process_Player(struct _Seafarer_Engine_Network_Client* SENC, int Connection_Status, struct _Engine* Engine, struct _Player_Submarine* On_Foot_Player, struct _On_Foot_Region* On_Foot_Region, struct _On_Foot_Region_File* On_Foot_Region_File)
 {
-    if(On_Foot_Player->z < 0)
-    {
-        //Current_Location = CURRENT_LOCATION_UNDERWATER;
-    }
-
-    else if(On_Foot_Player->z >= 0)
-    {
-        //Current_Location = CURRENT_LOCATION_SEA;
-    }
-
     float pitch_rad = On_Foot_Player->Yaw_Angle * M_PI / 180.0f;
     float yaw_rad = On_Foot_Player->Pitch_Angle * M_PI / 180.0f;
 
@@ -395,19 +400,32 @@ void Process_Player(struct _Seafarer_Engine_Network_Client* SENC, int Connection
     }
 
     On_Foot_Player->displacement.z -= GRAVITY;
-    Handle_Collision_Detection(On_Foot_Player, On_Foot_Region, On_Foot_Region_File);
 
-//    for(int x = 0; x < On_Foot_Region_File.Number_Of_Ships; x++)
-   // {
-       // Handle_Collision_Detection(Engine, On_Foot_Player, &Ship_Objects[x]->Ship_Interior, &Ship_Objects[x]->Ship_Interior_File);
-    //}
-
-    On_Foot_Player->z += On_Foot_Player->displacement.z;
-
-    if(!On_Foot_Player->Dead)
+    if(!Engine->On_Foot_State->On_Foot_Player->Is_Locked_Into_Chair)
     {
-        On_Foot_Player->x += On_Foot_Player->displacement.x;
-        On_Foot_Player->y += On_Foot_Player->displacement.y;
+        Handle_Collision_Detection(On_Foot_Player, On_Foot_Region, On_Foot_Region_File);
+
+        if(On_Foot_Player->Is_On_A_Ship)
+        {
+            Handle_Collision_Detection(On_Foot_Player, &Engine->On_Foot_State->Ship_Objects[On_Foot_Player->On_This_Ship]->Ship_Interior, &Engine->On_Foot_State->Ship_Objects[On_Foot_Player->On_This_Ship]->Ship_Interior_File);
+        }
+    }
+
+
+    if(!Engine->On_Foot_State->On_Foot_Player->Is_Locked_Into_Chair)
+    {
+        On_Foot_Player->z += On_Foot_Player->displacement.z;
+    }
+
+
+    if(!On_Foot_Player->Dead && On_Foot_Player->Current_Location == LOCATION_ON_FOOT && !Engine->On_Foot_State->On_Foot_Player->Is_Locked_Into_Chair)
+    {
+
+
+                On_Foot_Player->x += On_Foot_Player->displacement.x;
+                On_Foot_Player->y += On_Foot_Player->displacement.y;
+
+
     }
 
 
@@ -445,7 +463,7 @@ void Process_Player(struct _Seafarer_Engine_Network_Client* SENC, int Connection
    }
 };
 
-void Generate_Player_Inputs(struct _Seafarer_Engine_Network_Client* SENC, int Connection_Status, struct _Player_Submarine* On_Foot_Player, struct _Keypad Keypad, struct _On_Foot_Region* On_Foot_Region, struct _On_Foot_Region_File* On_Foot_Region_File)
+void Generate_Player_Inputs(struct _Seafarer_Engine_Network_Client* SENC, int Connection_Status, struct _Engine* Engine, struct _Player_Submarine* On_Foot_Player, struct _Keypad Keypad, struct _On_Foot_Region* On_Foot_Region, struct _On_Foot_Region_File* On_Foot_Region_File)
 {
    // if(Keypad.Keyboard_W) // Up Arrow (accelerate forward)
   //  {
@@ -469,19 +487,41 @@ void Generate_Player_Inputs(struct _Seafarer_Engine_Network_Client* SENC, int Co
  //   {
  //      On_Foot_Player->Jump_Not_Pressed = true;
  //   }
-    Process_Player(SENC, Connection_Status, On_Foot_Player, On_Foot_Region, On_Foot_Region_File);
+    Process_Player(SENC, Connection_Status, Engine, On_Foot_Player, On_Foot_Region, On_Foot_Region_File);
 };
 
 
 
-void Handle_Player_Inputs(struct _Seafarer_Engine_Network_Client* SENC, int Connection_Status, struct _Player_Submarine* On_Foot_Player, struct _Keypad Keypad, struct _On_Foot_Region* On_Foot_Region, struct _On_Foot_Region_File* On_Foot_Region_File)
+void Handle_Player_Inputs(struct _Engine* Engine, struct _Seafarer_Engine_Network_Client* SENC, int Connection_Status, struct _Player_Submarine* On_Foot_Player, struct _Keypad Keypad, struct _On_Foot_Region* On_Foot_Region, struct _On_Foot_Region_File* On_Foot_Region_File)
 {
-    if(!On_Foot_Player->Dead)
+    if(!On_Foot_Player->Dead && On_Foot_Player->Current_Location == LOCATION_ON_FOOT)
     {
-    if(Keypad.Keyboard_W) // Up Arrow (accelerate forward)
+    if(Keypad.Keyboard_W && !On_Foot_Player->Is_Locked_Into_Chair) // Up Arrow (accelerate forward)
     {
         On_Foot_Player->Current_State = CURRENT_STATE_WALKING;
         On_Foot_Player->Throttle = 9.5;
+    }
+
+
+
+    if(Keypad.Keyboard_Y && !Engine->On_Foot_State->On_Foot_Region.Seats[0]->TV_Mode_Switch_Was_Toggled) // Down Arrow (decelerate/accelerate backward)
+    {
+        Engine->On_Foot_State->On_Foot_Region.Seats[0]->TV_Mode_Switch_Was_Toggled = true;
+
+        if(Engine->On_Foot_State->On_Foot_Region.Seats[0]->TV_Mode)
+        {
+            Engine->On_Foot_State->On_Foot_Region.Seats[0]->TV_Mode = false;
+        }
+
+        else if(!Engine->On_Foot_State->On_Foot_Region.Seats[0]->TV_Mode)
+        {
+            Engine->On_Foot_State->On_Foot_Region.Seats[0]->TV_Mode = true;
+        }
+    }
+
+    if(!Keypad.Keyboard_Y) // Down Arrow (decelerate/accelerate backward)
+    {
+        Engine->On_Foot_State->On_Foot_Region.Seats[0]->TV_Mode_Switch_Was_Toggled = false;
     }
 
     if(!Keypad.Keyboard_W) // Down Arrow (decelerate/accelerate backward)
@@ -500,8 +540,112 @@ void Handle_Player_Inputs(struct _Seafarer_Engine_Network_Client* SENC, int Conn
     {
         On_Foot_Player->Jump_Not_Pressed = true;
     }
+
+    if(Keypad.Keyboard_R && On_Foot_Player->Is_Locked_Into_Chair)
+    {
+        if(On_Foot_Region->Seats[On_Foot_Player->Chair_ID]->New_Computer->Power_State == false)
+        {
+            Turn_Computer_On(Engine, On_Foot_Region->Seats[On_Foot_Player->Chair_ID]);
+        }
+
+        else if(On_Foot_Region->Seats[On_Foot_Player->Chair_ID]->New_Computer->Power_State == true) //Reboot
+        {
+            Turn_Computer_Off(Engine, On_Foot_Region->Seats[On_Foot_Player->Chair_ID]);
+            Turn_Computer_On(Engine, On_Foot_Region->Seats[On_Foot_Player->Chair_ID]);
+        }
     }
-    Process_Player(SENC, Connection_Status, On_Foot_Player, On_Foot_Region, On_Foot_Region_File);
+
+    if(Keypad.Keyboard_T && On_Foot_Player->Is_Locked_Into_Chair && On_Foot_Region->Seats[On_Foot_Player->Chair_ID]->New_Computer->Power_State == true)
+    {
+        Turn_Computer_Off(Engine, On_Foot_Region->Seats[On_Foot_Player->Chair_ID]);
+    }
+
+    if(Keypad.Keyboard_E) // Up Arrow (accelerate forward)
+    {
+        for(int j = 0; j < On_Foot_Region_File->Number_Of_Seats; j++)
+        {
+            double x = Get_Distance(On_Foot_Player->x,On_Foot_Player->y,On_Foot_Player->z,On_Foot_Region->Seats[j]->x,On_Foot_Region->Seats[j]->y,On_Foot_Region->Seats[j]->z);
+            if((x/METER_CONVERSION) <= 1 && !On_Foot_Player->Is_Locked_Into_Chair)
+            {
+                printf("Seat!\n");
+                On_Foot_Player->Is_Locked_Into_Chair = true;
+                On_Foot_Player->Chair_ID = j;
+
+                On_Foot_Player->x = On_Foot_Region->Seats[j]->x;
+                On_Foot_Player->y = On_Foot_Region->Seats[j]->y;
+                On_Foot_Player->z = On_Foot_Region->Seats[j]->z;
+            }
+        }
+
+
+
+        for(int j = 0; j < On_Foot_Region_File->Number_Of_Vehicles; j++)
+        {
+            double x = Get_Distance(On_Foot_Player->x,On_Foot_Player->y,On_Foot_Player->z,On_Foot_Region->Submarine_Vehicles[j]->plane_x,On_Foot_Region->Submarine_Vehicles[j]->plane_y,On_Foot_Region->Submarine_Vehicles[j]->plane_z);
+
+
+            if((x/METER_CONVERSION) <= 1)
+            {
+                if(!On_Foot_Region->Submarine_Vehicles[j]->Is_A_Proxy)
+                {
+                    printf("Number of Passengers: %d\n", On_Foot_Region->Submarine_Vehicles[j]->Number_Of_Passengers);
+                    printf("Max Number of Passengers: %d\n", On_Foot_Region->Submarine_Vehicles[j]->Maximum_Passengers);
+                    if(On_Foot_Region->Submarine_Vehicles[j]->Number_Of_Passengers + 1 <= On_Foot_Region->Submarine_Vehicles[j]->Maximum_Passengers)
+                    {
+                        if(On_Foot_Player->Current_Location == LOCATION_ON_FOOT)
+                        {
+                            printf("Getting in the SUB!\n");
+                            On_Foot_Player->Current_Location = LOCATION_SUBMARINE_VEHICLE;
+                            On_Foot_Player->Inside_This_Vehicle = j;
+
+                            for(int s = 0; s < On_Foot_Region->Submarine_Vehicles[j]->Maximum_Passengers; s++)
+                            {
+                                if(On_Foot_Region->Submarine_Vehicles[j]->Passenger_IDs[s].Category == 0 && On_Foot_Region->Submarine_Vehicles[j]->Passenger_IDs[s].Subcategory == 0 && On_Foot_Region->Submarine_Vehicles[j]->Passenger_IDs[s].Variant == 0 && On_Foot_Region->Submarine_Vehicles[j]->Passenger_IDs[s].ID == 0)
+                                {
+                                    On_Foot_Player->Am_This_Passenger = s;
+                                }
+                            }
+                            //On_Foot_Player->Vehicle_Belongs_To_This_Region = Region_ID;
+                            On_Foot_Player->Visible = false;
+                            On_Foot_Player->Injurable = false;
+
+                            for(int n = 0; n < 256; n++)
+                            {
+                                On_Foot_Region->Submarine_Vehicles[j]->Passenger_IDs[On_Foot_Player->Am_This_Passenger].Name[n] = On_Foot_Player->ID.Name[n];
+                            }
+                            On_Foot_Region->Submarine_Vehicles[j]->Passenger_IDs[On_Foot_Player->Am_This_Passenger].Category = On_Foot_Player->ID.Category;
+                            On_Foot_Region->Submarine_Vehicles[j]->Passenger_IDs[On_Foot_Player->Am_This_Passenger].Subcategory = On_Foot_Player->ID.Subcategory;
+                            On_Foot_Region->Submarine_Vehicles[j]->Passenger_IDs[On_Foot_Player->Am_This_Passenger].Variant = On_Foot_Player->ID.Variant;
+                            On_Foot_Region->Submarine_Vehicles[j]->Passenger_IDs[On_Foot_Player->Am_This_Passenger].ID = On_Foot_Player->ID.ID;
+
+                            On_Foot_Region->Submarine_Vehicles[j]->Number_Of_Passengers += 1;
+
+                            On_Foot_Region->Submarine_Vehicles[j]->Throttle = 1;
+
+                            printf("You are passenger %d\n", On_Foot_Player->Am_This_Passenger);
+                        }
+                    }
+                }
+
+                else if(On_Foot_Region->Submarine_Vehicles[j]->Is_A_Proxy)
+                {
+                    On_Foot_Player->x = Engine->On_Foot_State->Ship_Objects[On_Foot_Region->Submarine_Vehicles[j]->Proxy_ID]->Ship_Interior.Doors[0]->x;
+                    On_Foot_Player->y = Engine->On_Foot_State->Ship_Objects[On_Foot_Region->Submarine_Vehicles[j]->Proxy_ID]->Ship_Interior.Doors[0]->y;
+                    On_Foot_Player->z = Engine->On_Foot_State->Ship_Objects[On_Foot_Region->Submarine_Vehicles[j]->Proxy_ID]->Ship_Interior.Doors[0]->z+400;
+
+                    On_Foot_Player->Is_On_A_Ship = true;
+                    On_Foot_Player->On_This_Ship = On_Foot_Region->Submarine_Vehicles[j]->Proxy_ID;
+                }
+            }
+        }
+    }
+
+
+
+
+
+    }
+    Process_Player(SENC, Connection_Status, Engine, On_Foot_Player, On_Foot_Region, On_Foot_Region_File);
 };
 
 
@@ -704,11 +848,131 @@ struct _Submarine_Object* Create_Submarine_Object()
     return SO;
 }
 
+
+
+void Initialize_On_Foot_Submarine_Object(struct _Submarine_Object* Submarine_Object, double x, double y, double z, double yaw, double pitch, double roll)
+{
+    Submarine_Object->Port_Me_To_A_Display = false;
+    Submarine_Object->Use_This_Seats_Display = -1;
+
+
+    Submarine_Object->Models[0] = Create_SE3_Model();
+        Load_SE3_Model(Submarine_Object->Models[0], "resources/models/test_plane.se3");
+        Load_SE3_Texture(Submarine_Object->Models[0], "resources/models/ray_drone.sei");
+
+        Submarine_Object->View_Mode = TPS_MODE;
+
+        Submarine_Object->plane_x = x;
+        Submarine_Object->plane_y = y;
+        Submarine_Object->plane_z = z;
+        Submarine_Object->plane_yaw = yaw;
+        Submarine_Object->plane_pitch = pitch;
+        Submarine_Object->plane_roll = roll;
+        Submarine_Object->Single_Pilot = 0;
+
+        Submarine_Object->On_The_Ground = false;
+
+
+    Submarine_Object->Start_Frame = 0;
+    Submarine_Object->Current_Frame = 0;
+    Submarine_Object->End_Frame = 0;
+    Submarine_Object->Current_Model = 0;
+
+    Submarine_Object->Current_State = 0;
+
+    Submarine_Object->Forward_Vector.x = 0;
+    Submarine_Object->Forward_Vector.y = -1;
+    Submarine_Object->Forward_Vector.z = 0;
+
+
+    Submarine_Object->Right_Vector.x = 1;
+    Submarine_Object->Right_Vector.y = 0;
+    Submarine_Object->Right_Vector.z = 0;
+
+
+    Submarine_Object->Up_Vector.x = 0;
+    Submarine_Object->Up_Vector.y = 0;
+    Submarine_Object->Up_Vector.z = 1;
+
+
+
+    Submarine_Object->Ray_Sensor_Vector.x = 0;
+    Submarine_Object->Ray_Sensor_Vector.y = 0;
+    Submarine_Object->Ray_Sensor_Vector.z = 0;
+
+
+        Submarine_Object->Throttle = 1;
+
+    Submarine_Object->Floor_Collision = false;
+    Submarine_Object->Wall_Collision = false;
+    Submarine_Object->Ceiling_Collision = false;
+    Submarine_Object->Object_Collision = false;
+
+    Submarine_Object->On_Top_Of_An_AABB_Collision = false;
+    Submarine_Object->Underneath_An_AABB_Collision = false;
+    Submarine_Object->Colliding_With_An_AABB_Collision = false;
+
+    Submarine_Object->On_Top_Of_Mesh_Collision = false;
+    Submarine_Object->Underneath_Mesh_Collision = false;
+    Submarine_Object->Colliding_With_Mesh_Collision = false;
+
+    Submarine_Object->Able_To_Move_Away = true;
+
+    Submarine_Object->Able_To_Move_Off_Platform = true;
+
+
+    Submarine_Object->Feet_Collision_Geometry.min.x = -4;
+    Submarine_Object->Feet_Collision_Geometry.min.y = -4;
+    Submarine_Object->Feet_Collision_Geometry.min.z = 0;
+
+    Submarine_Object->Feet_Collision_Geometry.max.x = 4;
+    Submarine_Object->Feet_Collision_Geometry.max.y = 4;
+    Submarine_Object->Feet_Collision_Geometry.max.z = 20.5;
+
+
+    Submarine_Object->Head_Collision_Geometry.min.x = -4;
+    Submarine_Object->Head_Collision_Geometry.min.y = -4;
+    Submarine_Object->Head_Collision_Geometry.min.z = 20.5;
+
+    Submarine_Object->Head_Collision_Geometry.max.x = 4;
+    Submarine_Object->Head_Collision_Geometry.max.y = 4;
+    Submarine_Object->Head_Collision_Geometry.max.z = 40.5;
+
+
+    Submarine_Object->Do_Not_Alter_Velocity = false;
+
+    Submarine_Object->displacement.x = 0;
+    Submarine_Object->displacement.y = 0;
+    Submarine_Object->displacement.z = 0;
+
+
+
+
+      Submarine_Object->SPEED_STEP = 0.005f;
+    Submarine_Object->ANGLE_STEP = 1.0f;
+    Submarine_Object->TIMER_MS = 16; // ~60 FPS update rate
+
+// --- Global State Variables ---
+// Position (World Coordinates)
+
+    Submarine_Object->plane_roll = 0.0f;  // Rotation around Y-axis (Forward/Backward)
+
+// Speed (Magnitude of movement)
+    Submarine_Object->plane_speed = 0.5;
+
+}
+
+
+
+
+
+
+
 void Initialize_Submarine_Object(struct _Engine* Engine, int Submarine_ID)
 {
     Engine->Neural_Network_Training_State->Submarine->Models[0] = Create_SE3_Model();
-        Load_SE3_Model(Engine->Neural_Network_Training_State->Submarine->Models[0], "resources/data/submarines/car.se3");
-        Load_SE3_Texture(Engine->Neural_Network_Training_State->Submarine->Models[0], "sub.sei");
+        Load_SE3_Model(Engine->Neural_Network_Training_State->Submarine->Models[0], "resources/models/test_plane.se3");
+        Load_SE3_Texture(Engine->Neural_Network_Training_State->Submarine->Models[0], "texture_skybox.sei");
 
         Engine->Neural_Network_Training_State->Submarine->View_Mode = TPS_MODE;
 
@@ -825,14 +1089,54 @@ double Inverse_Square_Law(double Intensity, double Distance)
 
 void Process_Submarine_Object(struct _Engine* Engine, int Submarine_ID)
 {
-
+    Engine->On_Foot_State->On_Foot_Region.Submarine_Vehicles[Submarine_ID]->plane_x += Engine->On_Foot_State->On_Foot_Region.Submarine_Vehicles[Submarine_ID]->Forward_Vector.x * Engine->On_Foot_State->On_Foot_Region.Submarine_Vehicles[Submarine_ID]->Throttle;
+    Engine->On_Foot_State->On_Foot_Region.Submarine_Vehicles[Submarine_ID]->plane_y += Engine->On_Foot_State->On_Foot_Region.Submarine_Vehicles[Submarine_ID]->Forward_Vector.y * Engine->On_Foot_State->On_Foot_Region.Submarine_Vehicles[Submarine_ID]->Throttle;
+    Engine->On_Foot_State->On_Foot_Region.Submarine_Vehicles[Submarine_ID]->plane_z += Engine->On_Foot_State->On_Foot_Region.Submarine_Vehicles[Submarine_ID]->Forward_Vector.z * Engine->On_Foot_State->On_Foot_Region.Submarine_Vehicles[Submarine_ID]->Throttle;
 }
 
 
-void Handle_Submarine_Object_Inputs(struct _Engine* Engine, struct _Keypad Keypad, int Submarine_ID)
+void Handle_Submarine_Object_Inputs(struct _Engine* Engine, struct _Keypad Keypad, int ID)
 {
+        if(Keypad.Keyboard_Up)
+        {
+            Engine->On_Foot_State->On_Foot_Region.Submarine_Vehicles[ID]->plane_pitch -= Engine->On_Foot_State->On_Foot_Region.Submarine_Vehicles[ID]->ANGLE_STEP;
+            if(Engine->On_Foot_State->On_Foot_Region.Submarine_Vehicles[ID]->plane_pitch < 0)
+            {
+                Engine->On_Foot_State->On_Foot_Region.Submarine_Vehicles[ID]->plane_pitch += 360;
+            }
+            rotate_axes(&Engine->On_Foot_State->On_Foot_Region.Submarine_Vehicles[ID]->Forward_Vector,  &Engine->On_Foot_State->On_Foot_Region.Submarine_Vehicles[ID]->Up_Vector, Engine->On_Foot_State->On_Foot_Region.Submarine_Vehicles[ID]->Right_Vector,   -Engine->On_Foot_State->On_Foot_Region.Submarine_Vehicles[ID]->ANGLE_STEP);
+        }
 
-}
+        if(Keypad.Keyboard_Down)
+        {
+            Engine->On_Foot_State->On_Foot_Region.Submarine_Vehicles[ID]->plane_pitch += Engine->On_Foot_State->On_Foot_Region.Submarine_Vehicles[ID]->ANGLE_STEP;
+            if(Engine->On_Foot_State->On_Foot_Region.Submarine_Vehicles[ID]->plane_pitch > 359)
+            {
+                Engine->On_Foot_State->On_Foot_Region.Submarine_Vehicles[ID]->plane_pitch -= 360;
+            }
+            rotate_axes(&Engine->On_Foot_State->On_Foot_Region.Submarine_Vehicles[ID]->Forward_Vector,  &Engine->On_Foot_State->On_Foot_Region.Submarine_Vehicles[ID]->Up_Vector, Engine->On_Foot_State->On_Foot_Region.Submarine_Vehicles[ID]->Right_Vector,   Engine->On_Foot_State->On_Foot_Region.Submarine_Vehicles[ID]->ANGLE_STEP);
+        }
+
+        if(Keypad.Keyboard_Left)
+        {
+            Engine->On_Foot_State->On_Foot_Region.Submarine_Vehicles[ID]->plane_yaw += Engine->On_Foot_State->On_Foot_Region.Submarine_Vehicles[ID]->ANGLE_STEP;
+            if(Engine->On_Foot_State->On_Foot_Region.Submarine_Vehicles[ID]->plane_yaw > 359)
+            {
+                Engine->On_Foot_State->On_Foot_Region.Submarine_Vehicles[ID]->plane_yaw -= 360;
+            }
+            rotate_axes(&Engine->On_Foot_State->On_Foot_Region.Submarine_Vehicles[ID]->Up_Vector,  &Engine->On_Foot_State->On_Foot_Region.Submarine_Vehicles[ID]->Right_Vector, Engine->On_Foot_State->On_Foot_Region.Submarine_Vehicles[ID]->Forward_Vector,   Engine->On_Foot_State->On_Foot_Region.Submarine_Vehicles[ID]->ANGLE_STEP);
+        }
+
+        if(Keypad.Keyboard_Right)
+        {
+            Engine->On_Foot_State->On_Foot_Region.Submarine_Vehicles[ID]->plane_yaw -= Engine->On_Foot_State->On_Foot_Region.Submarine_Vehicles[ID]->ANGLE_STEP;
+            if(Engine->On_Foot_State->On_Foot_Region.Submarine_Vehicles[ID]->plane_yaw < 0)
+            {
+                Engine->On_Foot_State->On_Foot_Region.Submarine_Vehicles[ID]->plane_yaw += 360;
+            }
+            rotate_axes(&Engine->On_Foot_State->On_Foot_Region.Submarine_Vehicles[ID]->Up_Vector,  &Engine->On_Foot_State->On_Foot_Region.Submarine_Vehicles[ID]->Right_Vector, Engine->On_Foot_State->On_Foot_Region.Submarine_Vehicles[ID]->Forward_Vector,   -Engine->On_Foot_State->On_Foot_Region.Submarine_Vehicles[ID]->ANGLE_STEP);
+        }
+};
 
 void Render_Submarine_Object(struct _Engine* Engine, int Submarine_ID)
 {

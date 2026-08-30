@@ -462,10 +462,17 @@ void Destroy_Arc_Select_State(struct _Engine* Engine)
 
 void Initialize_Arc_Select_State(struct _Engine* Engine)
 {
+    Engine->Arc_Select_State->Title_Bar_Offset = 0;
+
     Set_Up_Level_List("resources/data/arcs/love_quest_fulfilled/level_list.dat");
     Set_Up_Level_List("resources/data/arcs/the_days_of_nova/level_list.dat");
     Set_Up_Level_Container("resources/data/arcs/love_quest_fulfilled/level_0.dat");
     Set_Up_Level_Container("resources/data/arcs/the_days_of_nova/level_0.dat");
+
+    //BMPtoSEI("resources/artwork/gui/english/select_book_title_bar.bmp", "resources/artwork/gui/english/select_book_title_bar.sei");
+
+    Engine->Arc_Select_State->Title_Bar = Create_Image();
+    Load_Image(Engine->Arc_Select_State->Title_Bar, "resources/artwork/gui/english/select_book_title_bar.sei");
 
     Engine->Arc_Select_State->Timer = Create_Timer();
     Set_Timer(Engine->Arc_Select_State->Timer);
@@ -488,13 +495,14 @@ void Initialize_Arc_Select_State(struct _Engine* Engine)
 
 void Render_Arc_Select_State(struct _Engine* Engine)
 {
-    Render_Image(Engine->Main_Menu_State->Background,0,0,1);
+    Render_Image(Engine->Main_Menu_State->Background,0,Engine->Arc_Select_State->Title_Bar_Offset,1);
     int Start_Y = 48;
     for(int j = 0; j < Engine->Arc_Select_State->Number_Of_Arc_Objects; j++)
     {
         Render_Image(Engine->Arc_Select_State->Arc_Objects[j].Arc_Banner,176,Start_Y + (96*j), 1);
     }
     Render_Image(Engine->Main_Menu_State->Selector,176,Engine->Arc_Select_State->Selector_Y,1);
+    Render_Image(Engine->Arc_Select_State->Title_Bar,0,Engine->Arc_Select_State->Title_Bar_Offset,1);
 };
 
 void Input_Arc_Select_State(struct _Engine* Engine, struct _Keypad Keypad)

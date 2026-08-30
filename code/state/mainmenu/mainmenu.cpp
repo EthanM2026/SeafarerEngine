@@ -20,6 +20,8 @@ struct _Main_Menu_State* Create_Main_Menu_State()
 
 void Initialize_Main_Menu_State(struct _Engine* Engine)
 {
+    Engine->Main_Menu_State->Background_x = 639;
+
     Engine->Main_Menu_State->Sound_Bar_Selected = Create_Image();
     Load_Image(Engine->Main_Menu_State->Sound_Bar_Selected, "resources/artwork/gui/main_menu_soundmeter_selected.sei");
 
@@ -137,7 +139,13 @@ void Render_Main_Menu_State(struct _Engine* Engine)
     }
 
 //if(!Engine->Main_Menu_State->Enter_Pressed)
-    Render_Image(Engine->Main_Menu_State->Background, 0,-150,1);
+    Render_Image(Engine->Main_Menu_State->Background, Engine->Main_Menu_State->Background_x,-150,1);
+    Render_Image(Engine->Main_Menu_State->Background, Engine->Main_Menu_State->Background_x-639,-150,1);
+    Engine->Main_Menu_State->Background_x-=0.1;
+    if(Engine->Main_Menu_State->Background_x <=0)
+    {
+        Engine->Main_Menu_State->Background_x = 639;
+    }
 
     if(Engine->Main_Menu_State->Mini_State == 1)
     {

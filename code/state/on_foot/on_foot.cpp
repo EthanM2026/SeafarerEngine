@@ -18,6 +18,13 @@ void Spawn_Character(struct _On_Foot_Region* On_Foot_Region, int ID, double x, d
     Initialize_On_Foot_Player(On_Foot_Region->Characters[ID], "none",x,y,z);
 }
 
+
+void Submarine_Vehicle_Collision_Detection(struct _Player_Submarine* On_Foot_Player, struct _On_Foot_Region* On_Foot_Region, struct _On_Foot_Region_File* On_Foot_Region_File)
+{
+
+}
+
+
 void Door_Collision_Detection(struct _Player_Submarine* On_Foot_Player, struct _On_Foot_Region* On_Foot_Region, struct _On_Foot_Region_File* On_Foot_Region_File)
 {
     //FOOT COLLISION DETECTION
@@ -79,7 +86,7 @@ void Handle_Unpausing_Logic(struct _Engine* Engine, struct _Keypad Keypad)
     //Mix_PlayChannel( -1, Engine->On_Foot_State->Pause_Confirm, 0 );
     glMatrixMode(GL_PROJECTION);
     glLoadIdentity();
-    gluPerspective(60, 1.7777,1.0f, METER_CONVERSION * 32000);
+    gluPerspective(60, 1.7777,1.0f, METER_CONVERSION*10000);
     glMatrixMode(GL_MODELVIEW);
     glLoadIdentity();
     gluLookAt(40,40,40,0,0,20,0,0,1);
@@ -175,6 +182,7 @@ void Handle_Pause_Rendering_Pass(struct _Engine* Engine)
 
 void Write_Ship(const char* Filename)
 {
+
     struct _On_Foot_Region_File OFR;
     memset(OFR.Name,0,256);
     sprintf(OFR.Name, "TEST REGION!");
@@ -187,146 +195,9 @@ void Write_Ship(const char* Filename)
     OFR.Number_Of_Ships = 0;
     OFR.Number_Of_Viewscreens = 0;
     OFR.Number_Of_Characters = 0;
-
-    int Size_Of_Vertical_Collision_Geometries = OFR.Number_Of_Vertical_Collision_Geometries * sizeof(struct _Vertical_Collision_Geometry);
-    int Size_Of_Horizontal_Collision_Geometries = OFR.Number_Of_Horizontal_Collision_Geometries * sizeof(struct _Horizontal_Collision_Geometry);
-    int Size_Of_Slope_Collision_Geometries = OFR.Number_Of_Slope_Collision_Geometries * sizeof(struct _Slope_Collision_Geometry);
-    int Size_Of_Terrains = OFR.Number_Of_Terrains * sizeof(struct _Terrain);
-    int Size_Of_Doors = OFR.Number_Of_Doors * sizeof(struct _Door);
-    int Size_Of_Ships = OFR.Number_Of_Ships * sizeof(struct _Ship);
-    int Size_Of_Viewscreens = OFR.Number_Of_Viewscreens * sizeof(struct _Viewscreen);
-    int Size_Of_Characters = OFR.Number_Of_Characters * sizeof(struct _Character);
-
-    OFR.Offset_To_Vertical_Collision_Geometries = sizeof(struct _On_Foot_Region_File);
-    OFR.Offset_To_Horizontal_Collision_Geometries = OFR.Offset_To_Vertical_Collision_Geometries + Size_Of_Vertical_Collision_Geometries;
-    OFR.Offset_To_Slope_Collision_Geometries = OFR.Offset_To_Horizontal_Collision_Geometries + Size_Of_Horizontal_Collision_Geometries;
-    OFR.Offset_To_Terrains = OFR.Offset_To_Slope_Collision_Geometries + Size_Of_Slope_Collision_Geometries;
-    OFR.Offset_To_Doors = OFR.Offset_To_Terrains + Size_Of_Terrains;
-    OFR.Offset_To_Ships = OFR.Offset_To_Doors + Size_Of_Doors;
-    OFR.Offset_To_Viewscreens = OFR.Offset_To_Ships + Size_Of_Ships;
-    OFR.Offset_To_Characters = OFR.Offset_To_Viewscreens + Size_Of_Viewscreens;
-
-    struct _Vertical_Collision_Geometry VCG;
-    struct _Horizontal_Collision_Geometry HCG;
-    struct _Slope_Collision_Geometry SCG;
-    struct _Terrain Terrain;
-    struct _Door Door;
-    struct _Ship Ship;
-
-    memset(Ship.Filepath,0,256);
-    sprintf(Ship.Filepath,"testship");
-
-    memset(VCG.Filepath,0,256);
-    memset(HCG.Filepath,0,256);
-    memset(SCG.Filepath,0,256);
-    memset(Terrain.Model,0,256);
-    memset(Terrain.Texture,0,256);
-
-    memset(Door.Model,0,256);
-    memset(Door.Texture,0,256);
-    memset(Door.Ceiling_Geometry_File,0,256);
-    memset(Door.Wall_Geometry_File,0,256);
-
-    Door.x=0;
-    Door.y=0;
-    Door.z=0;
-
-    Door.Axis_Orientation = 0;
-
-    sprintf(Door.Model, "door.se3");
-    sprintf(Door.Texture, "rosemary.sei");
-
-    sprintf(Door.Ceiling_Geometry_File, "none");
-    sprintf(Door.Wall_Geometry_File, "none");
-
-    Door.Use_Custom_Collision_Geometry = false;
-
-    Door.Entrance_AABB.min.x = -39.44;
-    Door.Entrance_AABB.min.y = -68.10824;
-    Door.Entrance_AABB.min.z = 0.32830;
-
-    Door.Entrance_AABB.max.x = 39.44;
-    Door.Entrance_AABB.max.y = -65.35680;
-    Door.Entrance_AABB.max.z = 79.20830;
-
-
-    Door.Exit_AABB.min.x = -39.44;
-    Door.Exit_AABB.min.y = 65.33680;
-    Door.Exit_AABB.min.z = 0.32830;
-
-    Door.Exit_AABB.max.x = 39.44;
-    Door.Exit_AABB.max.y = 68.10824;
-    Door.Exit_AABB.max.z = 79.20830;
-
-
-    Door.Entrance_Open = false;
-    Door.Exit_Open = false;
-
-    Door.Number_Of_Frames = 10;
-    Door.Current_Frame = 0;
-
-    Door.Teleport_Destination_X = 0;
-    Door.Teleport_Destination_Y = 0;
-    Door.Teleport_Destination_Z = 500;
-
-    Door.Connected_To_Type = -1;
-    Door.Connection_Destination_Door = -1;
-
-
-
-
-    sprintf(VCG.Filepath,"vtestgeometry.se3");
-    sprintf(HCG.Filepath,"htestgeometry.se3");
-    sprintf(SCG.Filepath,"stestgeometry.se3");
-    sprintf(Terrain.Model,"testgeometry.se3");
-    sprintf(Terrain.Texture,"rosemary.sei");
-    Terrain.Visible = true;
-    Terrain.x = 0;
-    Terrain.y = 0;
-    Terrain.z = 0;
-
-
-    FILE* f = fopen(Filename, "wb");
-    fwrite(&OFR, 1, sizeof(struct _On_Foot_Region_File),f);
-    rewind(f);
-
-    fseek(f, OFR.Offset_To_Vertical_Collision_Geometries, SEEK_SET);
-    fwrite(&VCG, 1, sizeof(struct _Vertical_Collision_Geometry),f);
-    rewind(f);
-
-    fseek(f, OFR.Offset_To_Horizontal_Collision_Geometries, SEEK_SET);
-    fwrite(&HCG, 1, sizeof(struct _Horizontal_Collision_Geometry),f);
-    rewind(f);
-
-    fseek(f, OFR.Offset_To_Slope_Collision_Geometries, SEEK_SET);
-    fwrite(&SCG, 1, sizeof(struct _Slope_Collision_Geometry),f);
-    rewind(f);
-
-    fseek(f, OFR.Offset_To_Terrains, SEEK_SET);
-    fwrite(&Terrain, 1, sizeof(struct _Terrain),f);
-    rewind(f);
-
-    fseek(f, OFR.Offset_To_Doors, SEEK_SET);
-    fwrite(&Door, 1, sizeof(struct _Door),f);
-    fclose(f);
-}
-
-
-void Write_On_Foot_Region(const char* Filename)
-{
-    struct _On_Foot_Region_File OFR;
-    memset(OFR.Name,0,256);
-    sprintf(OFR.Name, "TEST REGION!");
-
-    OFR.Number_Of_Vertical_Collision_Geometries = 1;
-    OFR.Number_Of_Horizontal_Collision_Geometries = 1;
-    OFR.Number_Of_Slope_Collision_Geometries = 1;
-    OFR.Number_Of_Terrains = 2;
-    OFR.Number_Of_Doors = 1;
-    OFR.Number_Of_Ships = 1;
-    OFR.Number_Of_Viewscreens = 0;
-    OFR.Number_Of_Characters = 12;
     OFR.Number_Of_Goalposts = 1;
+    OFR.Number_Of_Vehicles = 0;
+    OFR.Number_Of_Seats = 3;
 
     int Size_Of_Vertical_Collision_Geometries = OFR.Number_Of_Vertical_Collision_Geometries * sizeof(struct _Vertical_Collision_Geometry);
     int Size_Of_Horizontal_Collision_Geometries = OFR.Number_Of_Horizontal_Collision_Geometries * sizeof(struct _Horizontal_Collision_Geometry);
@@ -337,6 +208,8 @@ void Write_On_Foot_Region(const char* Filename)
     int Size_Of_Viewscreens = OFR.Number_Of_Viewscreens * sizeof(struct _Viewscreen);
     int Size_Of_Characters = OFR.Number_Of_Characters * sizeof(struct _Character);
     int Size_Of_Goalposts = OFR.Number_Of_Goalposts * sizeof(struct _Goalpost);
+    int Size_Of_Vehicles = OFR.Number_Of_Vehicles * sizeof(struct _Vehicle);
+    int Size_Of_Seats = OFR.Number_Of_Seats * sizeof(struct _Seat);
 
     OFR.Offset_To_Vertical_Collision_Geometries = sizeof(struct _On_Foot_Region_File);
     OFR.Offset_To_Horizontal_Collision_Geometries = OFR.Offset_To_Vertical_Collision_Geometries + Size_Of_Vertical_Collision_Geometries;
@@ -347,6 +220,239 @@ void Write_On_Foot_Region(const char* Filename)
     OFR.Offset_To_Viewscreens = OFR.Offset_To_Ships + Size_Of_Ships;
     OFR.Offset_To_Characters = OFR.Offset_To_Viewscreens + Size_Of_Viewscreens;
     OFR.Offset_To_Goalposts = OFR.Offset_To_Characters + Size_Of_Characters;
+    OFR.Offset_To_Vehicles = OFR.Offset_To_Goalposts + Size_Of_Goalposts;
+    OFR.Offset_To_Seats = OFR.Offset_To_Vehicles + Size_Of_Vehicles;
+
+    struct _Seat S;
+    memset(S.Model,0,256);
+    memset(S.Texture,0,256);
+
+    sprintf(S.Model, "resources/data/seats/seat.se3");
+    sprintf(S.Texture, "resources/data/seats/seat.sei");
+
+    S.x = 0;
+    S.y = 0;
+    S.z = 0;
+
+    S.x1 = 0;
+    S.y1 = 0;
+    S.z1 = 0;
+
+    S.x2 = 0;
+    S.y2 = 0;
+    S.z2 = 0;
+
+    S.Eye_Offset_x = 0;
+    S.Eye_Offset_y = 0;
+    S.Eye_Offset_z = 0;
+
+    S.Is_A_Drivers_Seat = 0;
+    S.Seat_Contains_Console = 0;
+
+    S.Red_Color_Balance = 0;
+    S.Green_Color_Balance = 0;
+    S.Blue_Color_Balance = 0;
+
+    S.Color_Mode = 0;
+
+    S.Power_State = 1;
+
+
+
+    S.Screen_y3=6.24936;
+    S.Screen_x3=-20.31796;
+    S.Screen_z3=27.15369;
+
+    S.Screen_y2=6.24936;
+    S.Screen_x2=-22.14693;
+    S.Screen_z2=39.65241;
+
+    S.Screen_y1=-6.24936;
+    S.Screen_x1=-22.14693;
+    S.Screen_z1=39.65241;
+
+    S.Screen_y4=-6.24936;
+    S.Screen_x4=-20.31796;
+    S.Screen_z4=27.15369;
+
+
+
+
+    struct _Seat Se;
+    memset(Se.Model,0,256);
+    memset(Se.Texture,0,256);
+
+    sprintf(Se.Model, "resources/data/seats/seat.se3");
+    sprintf(Se.Texture, "resources/data/seats/seat.sei");
+
+    Se.x = 0;
+    Se.y = 60;
+    Se.z = 0;
+
+    Se.x1 = 0;
+    Se.y1 = 0;
+    Se.z1 = 0;
+
+    Se.x2 = 0;
+    Se.y2 = 0;
+    Se.z2 = 0;
+
+    Se.Eye_Offset_x = 0;
+    Se.Eye_Offset_y = 0;
+    Se.Eye_Offset_z = 0;
+
+    Se.Is_A_Drivers_Seat = 0;
+    Se.Seat_Contains_Console = 0;
+
+    Se.Red_Color_Balance = 0;
+    Se.Green_Color_Balance = 0;
+    Se.Blue_Color_Balance = 0;
+
+    Se.Color_Mode = 0;
+
+    Se.Power_State = 1;
+
+
+
+    Se.Screen_y3=6.24936;
+    Se.Screen_x3=-20.31796;
+    Se.Screen_z3=27.15369;
+
+    Se.Screen_y2=6.24936;
+    Se.Screen_x2=-22.14693;
+    Se.Screen_z2=39.65241;
+
+    Se.Screen_y1=-6.24936;
+    Se.Screen_x1=-22.14693;
+    Se.Screen_z1=39.65241;
+
+    Se.Screen_y4=-6.24936;
+    Se.Screen_x4=-20.31796;
+    Se.Screen_z4=27.15369;
+
+    struct _Seat Sea;
+    memset(Sea.Model,0,256);
+    memset(Sea.Texture,0,256);
+
+    sprintf(Sea.Model, "resources/data/seats/seat.se3");
+    sprintf(Sea.Texture, "resources/data/seats/seat.sei");
+
+    Sea.x = 0;
+    Sea.y = 120;
+    Sea.z = 0;
+
+    Sea.x1 = 0;
+    Sea.y1 = 0;
+    Sea.z1 = 0;
+
+    Sea.x2 = 0;
+    Sea.y2 = 0;
+    Sea.z2 = 0;
+
+    Sea.Eye_Offset_x = 0;
+    Sea.Eye_Offset_y = 0;
+    Sea.Eye_Offset_z = 0;
+
+    Sea.Is_A_Drivers_Seat = 0;
+    Sea.Seat_Contains_Console = 0;
+
+    Sea.Red_Color_Balance = 0;
+    Sea.Green_Color_Balance = 0;
+    Sea.Blue_Color_Balance = 0;
+
+    Sea.Color_Mode = 0;
+
+    Sea.Power_State = 1;
+
+
+
+    Sea.Screen_y3=6.24936;
+    Sea.Screen_x3=-20.31796;
+    Sea.Screen_z3=27.15369;
+
+    Sea.Screen_y2=6.24936;
+    Sea.Screen_x2=-22.14693;
+    Sea.Screen_z2=39.65241;
+
+    Sea.Screen_y1=-6.24936;
+    Sea.Screen_x1=-22.14693;
+    Sea.Screen_z1=39.65241;
+
+    Sea.Screen_y4=-6.24936;
+    Sea.Screen_x4=-20.31796;
+    Sea.Screen_z4=27.15369;
+
+
+    struct _Vehicle V;
+
+    memset(V.Model,0,256);
+    memset(V.Texture,0,256);
+
+    sprintf(V.Model, "resources/data/submarines/car.se3");
+    sprintf(V.Texture, "resources/data/submarines/car.sei");
+
+    V.x = 20;
+    V.y = 0;
+    V.z = 0;
+    V.Roll = 0;
+    V.Yaw = 0;
+    V.Pitch = 0;
+    V.Damage = 0;
+    V.Entrance_Radius = 1;
+    V.Is_A_Proxy = false;
+    V.Proxy_ID = -1;
+    V.Maximum_Passengers = 1;
+    V.Number_Of_Passengers = 0;
+
+    for(int m = 0; m < 256; m++)
+    {
+        for(int n = 0; n < 256; n++)
+        {
+                V.Passenger_IDs[m].Name[n] = 0;
+        }
+        V.Passenger_IDs[m].Category = 0;
+        V.Passenger_IDs[m].Subcategory = 0;
+        V.Passenger_IDs[m].Variant = 0;
+        V.Passenger_IDs[m].ID = 0;
+    }
+
+
+
+
+
+    struct _Vehicle Ve;
+
+    memset(Ve.Model,0,256);
+    memset(Ve.Texture,0,256);
+
+    sprintf(Ve.Model, "resources/data/submarines/car.se3");
+    sprintf(Ve.Texture, "resources/data/submarines/car.sei");
+
+    Ve.x = 40;
+    Ve.y = 0;
+    Ve.z = 0;
+    Ve.Roll = 0;
+    Ve.Yaw = 0;
+    Ve.Pitch = 0;
+    Ve.Damage = 0;
+    Ve.Entrance_Radius = 1;
+    Ve.Is_A_Proxy = false;
+    Ve.Proxy_ID = 0;
+    Ve.Maximum_Passengers = 1;
+    Ve.Number_Of_Passengers = 0;
+
+    for(int m = 0; m < 256; m++)
+    {
+        for(int n = 0; n < 256; n++)
+        {
+                Ve.Passenger_IDs[m].Name[n] = 0;
+        }
+        Ve.Passenger_IDs[m].Category = 0;
+        Ve.Passenger_IDs[m].Subcategory = 0;
+        Ve.Passenger_IDs[m].Variant = 0;
+        Ve.Passenger_IDs[m].ID = 0;
+    }
+
 
     struct _Vertical_Collision_Geometry VCG;
     struct _Horizontal_Collision_Geometry HCG;
@@ -360,10 +466,10 @@ void Write_On_Foot_Region(const char* Filename)
     memset(Goal.Model,0,256);
     memset(Goal.Texture,0,256);
 
-    sprintf(Goal.Model, "goalpost.se3");
-    sprintf(Goal.Texture, "rosemary.sei");
+    sprintf(Goal.Model, "resources/models/ray_drone.se3");
+    sprintf(Goal.Texture, "resources/models/ray_drone.sei");
 
-    Goal.x = 60;
+    Goal.x = 150;
     Goal.y = 0;
     Goal.z = 0;
 
@@ -397,7 +503,7 @@ void Write_On_Foot_Region(const char* Filename)
 
     Door.Axis_Orientation = 0;
 
-    sprintf(Door.Model, "door.se3");
+    sprintf(Door.Model, "resources/models/door.se3");
     sprintf(Door.Texture, "rosemary.sei");
 
     sprintf(Door.Ceiling_Geometry_File, "none");
@@ -439,15 +545,450 @@ void Write_On_Foot_Region(const char* Filename)
 
 
 
-    sprintf(VCG.Filepath,"vtestgeometry.se3");
-    sprintf(HCG.Filepath,"htestgeometry.se3");
-    sprintf(SCG.Filepath,"stestgeometry.se3");
-    sprintf(Terrain.Model,"testgeometry.se3");
+    sprintf(VCG.Filepath,"resources/models/vtestgeometry.se3");
+    sprintf(HCG.Filepath,"resources/models/htestgeometry.se3");
+    sprintf(SCG.Filepath,"resources/models/stestgeometry.se3");
+    sprintf(Terrain.Model,"resources/models/testgeometry.se3");
     sprintf(Terrain.Texture,"rosemary.sei");
     Terrain.Visible = true;
     Terrain.x = 0;
     Terrain.y = 0;
     Terrain.z = 0;
+
+    VCG.x = 0;
+    HCG.x = 0;
+    SCG.x = 0;
+
+    VCG.y = 0;
+    HCG.y = 0;
+    SCG.y = 0;
+
+    VCG.z = 0;
+    HCG.z = 0;
+    SCG.z = 0;
+
+
+    FILE* f = fopen(Filename, "wb");
+    fwrite(&OFR, 1, sizeof(struct _On_Foot_Region_File),f);
+    rewind(f);
+
+    fseek(f, OFR.Offset_To_Vertical_Collision_Geometries, SEEK_SET);
+    fwrite(&VCG, 1, sizeof(struct _Vertical_Collision_Geometry),f);
+    rewind(f);
+
+    fseek(f, OFR.Offset_To_Horizontal_Collision_Geometries, SEEK_SET);
+    fwrite(&HCG, 1, sizeof(struct _Horizontal_Collision_Geometry),f);
+    rewind(f);
+
+    fseek(f, OFR.Offset_To_Slope_Collision_Geometries, SEEK_SET);
+    fwrite(&SCG, 1, sizeof(struct _Slope_Collision_Geometry),f);
+    rewind(f);
+
+    fseek(f, OFR.Offset_To_Terrains, SEEK_SET);
+    fwrite(&Terrain, 1, sizeof(struct _Terrain),f);
+    rewind(f);
+
+    fseek(f, OFR.Offset_To_Goalposts, SEEK_SET);
+    fwrite(&Goal, 1, sizeof(struct _Goalpost),f);
+    rewind(f);
+
+    fseek(f, OFR.Offset_To_Doors, SEEK_SET);
+    fwrite(&Door, 1, sizeof(struct _Door),f);
+    rewind(f);
+
+    fseek(f, OFR.Offset_To_Seats, SEEK_SET);
+    fwrite(&S, 1, sizeof(struct _Seat),f);
+    fwrite(&Se, 1, sizeof(struct _Seat),f);
+    fwrite(&Sea, 1, sizeof(struct _Seat),f);
+    fclose(f);
+}
+
+
+void Write_On_Foot_Region(const char* Filename)
+{
+    struct _On_Foot_Region_File OFR;
+    memset(OFR.Name,0,256);
+    sprintf(OFR.Name, "TEST REGION!");
+
+    OFR.Number_Of_Vertical_Collision_Geometries = 1;
+    OFR.Number_Of_Horizontal_Collision_Geometries = 1;
+    OFR.Number_Of_Slope_Collision_Geometries = 1;
+    OFR.Number_Of_Terrains = 2;
+    OFR.Number_Of_Doors = 1;
+    OFR.Number_Of_Ships = 0;
+    OFR.Number_Of_Viewscreens = 0;
+    OFR.Number_Of_Characters = 12;
+    OFR.Number_Of_Goalposts = 1;
+    OFR.Number_Of_Vehicles = 2;
+    OFR.Number_Of_Seats = 3;
+
+    int Size_Of_Vertical_Collision_Geometries = OFR.Number_Of_Vertical_Collision_Geometries * sizeof(struct _Vertical_Collision_Geometry);
+    int Size_Of_Horizontal_Collision_Geometries = OFR.Number_Of_Horizontal_Collision_Geometries * sizeof(struct _Horizontal_Collision_Geometry);
+    int Size_Of_Slope_Collision_Geometries = OFR.Number_Of_Slope_Collision_Geometries * sizeof(struct _Slope_Collision_Geometry);
+    int Size_Of_Terrains = OFR.Number_Of_Terrains * sizeof(struct _Terrain);
+    int Size_Of_Doors = OFR.Number_Of_Doors * sizeof(struct _Door);
+    int Size_Of_Ships = OFR.Number_Of_Ships * sizeof(struct _Ship);
+    int Size_Of_Viewscreens = OFR.Number_Of_Viewscreens * sizeof(struct _Viewscreen);
+    int Size_Of_Characters = OFR.Number_Of_Characters * sizeof(struct _Character);
+    int Size_Of_Goalposts = OFR.Number_Of_Goalposts * sizeof(struct _Goalpost);
+    int Size_Of_Vehicles = OFR.Number_Of_Vehicles * sizeof(struct _Vehicle);
+    int Size_Of_Seats = OFR.Number_Of_Seats * sizeof(struct _Seat);
+
+    OFR.Offset_To_Vertical_Collision_Geometries = sizeof(struct _On_Foot_Region_File);
+    OFR.Offset_To_Horizontal_Collision_Geometries = OFR.Offset_To_Vertical_Collision_Geometries + Size_Of_Vertical_Collision_Geometries;
+    OFR.Offset_To_Slope_Collision_Geometries = OFR.Offset_To_Horizontal_Collision_Geometries + Size_Of_Horizontal_Collision_Geometries;
+    OFR.Offset_To_Terrains = OFR.Offset_To_Slope_Collision_Geometries + Size_Of_Slope_Collision_Geometries;
+    OFR.Offset_To_Doors = OFR.Offset_To_Terrains + Size_Of_Terrains;
+    OFR.Offset_To_Ships = OFR.Offset_To_Doors + Size_Of_Doors;
+    OFR.Offset_To_Viewscreens = OFR.Offset_To_Ships + Size_Of_Ships;
+    OFR.Offset_To_Characters = OFR.Offset_To_Viewscreens + Size_Of_Viewscreens;
+    OFR.Offset_To_Goalposts = OFR.Offset_To_Characters + Size_Of_Characters;
+    OFR.Offset_To_Vehicles = OFR.Offset_To_Goalposts + Size_Of_Goalposts;
+    OFR.Offset_To_Seats = OFR.Offset_To_Vehicles + Size_Of_Vehicles;
+
+    struct _Seat S;
+    memset(S.Model,0,256);
+    memset(S.Texture,0,256);
+
+    sprintf(S.Model, "resources/data/seats/seat.se3");
+    sprintf(S.Texture, "resources/data/seats/seat.sei");
+
+    S.x = 0;
+    S.y = 0;
+    S.z = 0;
+
+    S.x1 = 0;
+    S.y1 = 0;
+    S.z1 = 0;
+
+    S.x2 = 0;
+    S.y2 = 0;
+    S.z2 = 0;
+
+    S.Eye_Offset_x = 0;
+    S.Eye_Offset_y = 0;
+    S.Eye_Offset_z = 0;
+
+    S.Is_A_Drivers_Seat = 0;
+    S.Seat_Contains_Console = 0;
+
+    S.Red_Color_Balance = 0;
+    S.Green_Color_Balance = 0;
+    S.Blue_Color_Balance = 0;
+
+    S.Color_Mode = 0;
+
+    S.Power_State = 1;
+
+
+
+    S.Screen_y3=6.24936;
+    S.Screen_x3=-20.31796;
+    S.Screen_z3=27.15369;
+
+    S.Screen_y2=6.24936;
+    S.Screen_x2=-22.14693;
+    S.Screen_z2=39.65241;
+
+    S.Screen_y1=-6.24936;
+    S.Screen_x1=-22.14693;
+    S.Screen_z1=39.65241;
+
+    S.Screen_y4=-6.24936;
+    S.Screen_x4=-20.31796;
+    S.Screen_z4=27.15369;
+
+
+
+
+    struct _Seat Se;
+    memset(Se.Model,0,256);
+    memset(Se.Texture,0,256);
+
+    sprintf(Se.Model, "resources/data/seats/seat.se3");
+    sprintf(Se.Texture, "resources/data/seats/seat.sei");
+
+    Se.x = 0;
+    Se.y = 60;
+    Se.z = 0;
+
+    Se.x1 = 0;
+    Se.y1 = 0;
+    Se.z1 = 0;
+
+    Se.x2 = 0;
+    Se.y2 = 0;
+    Se.z2 = 0;
+
+    Se.Eye_Offset_x = 0;
+    Se.Eye_Offset_y = 0;
+    Se.Eye_Offset_z = 0;
+
+    Se.Is_A_Drivers_Seat = 0;
+    Se.Seat_Contains_Console = 0;
+
+    Se.Red_Color_Balance = 0;
+    Se.Green_Color_Balance = 0;
+    Se.Blue_Color_Balance = 0;
+
+    Se.Color_Mode = 0;
+
+    Se.Power_State = 1;
+
+
+
+    Se.Screen_y3=6.24936;
+    Se.Screen_x3=-20.31796;
+    Se.Screen_z3=27.15369;
+
+    Se.Screen_y2=6.24936;
+    Se.Screen_x2=-22.14693;
+    Se.Screen_z2=39.65241;
+
+    Se.Screen_y1=-6.24936;
+    Se.Screen_x1=-22.14693;
+    Se.Screen_z1=39.65241;
+
+    Se.Screen_y4=-6.24936;
+    Se.Screen_x4=-20.31796;
+    Se.Screen_z4=27.15369;
+
+    struct _Seat Sea;
+    memset(Sea.Model,0,256);
+    memset(Sea.Texture,0,256);
+
+    sprintf(Sea.Model, "resources/data/seats/seat.se3");
+    sprintf(Sea.Texture, "resources/data/seats/seat.sei");
+
+    Sea.x = 0;
+    Sea.y = 120;
+    Sea.z = 0;
+
+    Sea.x1 = 0;
+    Sea.y1 = 0;
+    Sea.z1 = 0;
+
+    Sea.x2 = 0;
+    Sea.y2 = 0;
+    Sea.z2 = 0;
+
+    Sea.Eye_Offset_x = 0;
+    Sea.Eye_Offset_y = 0;
+    Sea.Eye_Offset_z = 0;
+
+    Sea.Is_A_Drivers_Seat = 0;
+    Sea.Seat_Contains_Console = 0;
+
+    Sea.Red_Color_Balance = 0;
+    Sea.Green_Color_Balance = 0;
+    Sea.Blue_Color_Balance = 0;
+
+    Sea.Color_Mode = 0;
+
+    Sea.Power_State = 1;
+
+
+
+    Sea.Screen_y3=6.24936;
+    Sea.Screen_x3=-20.31796;
+    Sea.Screen_z3=27.15369;
+
+    Sea.Screen_y2=6.24936;
+    Sea.Screen_x2=-22.14693;
+    Sea.Screen_z2=39.65241;
+
+    Sea.Screen_y1=-6.24936;
+    Sea.Screen_x1=-22.14693;
+    Sea.Screen_z1=39.65241;
+
+    Sea.Screen_y4=-6.24936;
+    Sea.Screen_x4=-20.31796;
+    Sea.Screen_z4=27.15369;
+
+
+    struct _Vehicle V;
+
+    memset(V.Model,0,256);
+    memset(V.Texture,0,256);
+
+    sprintf(V.Model, "resources/data/submarines/car.se3");
+    sprintf(V.Texture, "resources/data/submarines/car.sei");
+
+    V.x = 0;
+    V.y = 1000;
+    V.z = 0;
+    V.Roll = 0;
+    V.Yaw = 0;
+    V.Pitch = 0;
+    V.Damage = 0;
+    V.Entrance_Radius = 1;
+    V.Is_A_Proxy = false;
+    V.Proxy_ID = -1;
+    V.Maximum_Passengers = 1;
+    V.Number_Of_Passengers = 0;
+
+    for(int m = 0; m < 256; m++)
+    {
+        for(int n = 0; n < 256; n++)
+        {
+                V.Passenger_IDs[m].Name[n] = 0;
+        }
+        V.Passenger_IDs[m].Category = 0;
+        V.Passenger_IDs[m].Subcategory = 0;
+        V.Passenger_IDs[m].Variant = 0;
+        V.Passenger_IDs[m].ID = 0;
+    }
+
+
+
+
+
+    struct _Vehicle Ve;
+
+    memset(Ve.Model,0,256);
+    memset(Ve.Texture,0,256);
+
+    sprintf(Ve.Model, "resources/data/submarines/car.se3");
+    sprintf(Ve.Texture, "resources/data/submarines/car.sei");
+
+    Ve.x = 400;
+    Ve.y = 0;
+    Ve.z = 0;
+    Ve.Roll = 0;
+    Ve.Yaw = 0;
+    Ve.Pitch = 0;
+    Ve.Damage = 0;
+    Ve.Entrance_Radius = 1;
+    Ve.Is_A_Proxy = false;
+    Ve.Proxy_ID = 0;
+    Ve.Maximum_Passengers = 1;
+    Ve.Number_Of_Passengers = 0;
+
+    for(int m = 0; m < 256; m++)
+    {
+        for(int n = 0; n < 256; n++)
+        {
+                Ve.Passenger_IDs[m].Name[n] = 0;
+        }
+        Ve.Passenger_IDs[m].Category = 0;
+        Ve.Passenger_IDs[m].Subcategory = 0;
+        Ve.Passenger_IDs[m].Variant = 0;
+        Ve.Passenger_IDs[m].ID = 0;
+    }
+
+
+    struct _Vertical_Collision_Geometry VCG;
+    struct _Horizontal_Collision_Geometry HCG;
+    struct _Slope_Collision_Geometry SCG;
+    struct _Terrain Terrain;
+    struct _Door Door;
+    struct _Ship Ship;
+    struct _Character C;
+    struct _Goalpost Goal;
+
+    memset(Goal.Model,0,256);
+    memset(Goal.Texture,0,256);
+
+    sprintf(Goal.Model, "resources/models/ray_drone.se3");
+    sprintf(Goal.Texture, "resources/models/ray_drone.sei");
+
+    Goal.x = 150;
+    Goal.y = 0;
+    Goal.z = 0;
+
+    Goal.Radius = 40;
+    Goal.Clear_Category = DIFFICULTY_MEDIUM;
+
+    memset(C.Filepath,0,256);
+    sprintf(C.Filepath,"testship");
+    C.x = 30;
+    C.y = 30;
+    C.z = 30;
+
+
+    memset(Ship.Filepath,0,256);
+    sprintf(Ship.Filepath,"testship");
+
+    memset(VCG.Filepath,0,256);
+    memset(HCG.Filepath,0,256);
+    memset(SCG.Filepath,0,256);
+    memset(Terrain.Model,0,256);
+    memset(Terrain.Texture,0,256);
+
+    memset(Door.Model,0,256);
+    memset(Door.Texture,0,256);
+    memset(Door.Ceiling_Geometry_File,0,256);
+    memset(Door.Wall_Geometry_File,0,256);
+
+    Door.x=0;
+    Door.y=0;
+    Door.z=0;
+
+    Door.Axis_Orientation = 0;
+
+    sprintf(Door.Model, "resources/models/door.se3");
+    sprintf(Door.Texture, "rosemary.sei");
+
+    sprintf(Door.Ceiling_Geometry_File, "none");
+    sprintf(Door.Wall_Geometry_File, "none");
+
+    Door.Use_Custom_Collision_Geometry = false;
+
+    Door.Entrance_AABB.min.x = -39.44;
+    Door.Entrance_AABB.min.y = -68.10824;
+    Door.Entrance_AABB.min.z = 0.32830;
+
+    Door.Entrance_AABB.max.x = 39.44;
+    Door.Entrance_AABB.max.y = -65.35680;
+    Door.Entrance_AABB.max.z = 79.20830;
+
+
+    Door.Exit_AABB.min.x = -39.44;
+    Door.Exit_AABB.min.y = 65.33680;
+    Door.Exit_AABB.min.z = 0.32830;
+
+    Door.Exit_AABB.max.x = 39.44;
+    Door.Exit_AABB.max.y = 68.10824;
+    Door.Exit_AABB.max.z = 79.20830;
+
+
+    Door.Entrance_Open = false;
+    Door.Exit_Open = false;
+
+    Door.Number_Of_Frames = 10;
+    Door.Current_Frame = 0;
+
+    Door.Teleport_Destination_X = 0;
+    Door.Teleport_Destination_Y = 0;
+    Door.Teleport_Destination_Z = 6000;
+
+    Door.Connected_To_Type = 1;
+    Door.Connection_Destination_Door = 0;
+
+
+
+
+    sprintf(VCG.Filepath,"resources/models/vtestgeometry.se3");
+    sprintf(HCG.Filepath,"resources/models/htestgeometry.se3");
+    sprintf(SCG.Filepath,"resources/models/stestgeometry.se3");
+    sprintf(Terrain.Model,"resources/models/testgeometry.se3");
+    sprintf(Terrain.Texture,"rosemary.sei");
+    Terrain.Visible = true;
+    Terrain.x = 0;
+    Terrain.y = 0;
+    Terrain.z = 0;
+
+    VCG.x = 0;
+    HCG.x = 0;
+    SCG.x = 0;
+
+    VCG.y = 0;
+    HCG.y = 0;
+    SCG.y = 0;
+
+    VCG.z = 0;
+    HCG.z = 0;
+    SCG.z = 0;
 
 
     FILE* f = fopen(Filename, "wb");
@@ -471,7 +1012,7 @@ void Write_On_Foot_Region(const char* Filename)
     rewind(f);
 
     fseek(f, OFR.Offset_To_Ships, SEEK_SET);
-    fwrite(&Ship, 1, sizeof(struct _Ship),f);
+    //fwrite(&Ship, 1, sizeof(struct _Ship),f);
     rewind(f);
 
     fseek(f, OFR.Offset_To_Goalposts, SEEK_SET);
@@ -495,6 +1036,17 @@ void Write_On_Foot_Region(const char* Filename)
 
     fseek(f, OFR.Offset_To_Doors, SEEK_SET);
     fwrite(&Door, 1, sizeof(struct _Door),f);
+    rewind(f);
+
+    fseek(f, OFR.Offset_To_Vehicles, SEEK_SET);
+    fwrite(&V, 1, sizeof(struct _Vehicle),f);
+    fwrite(&Ve, 1, sizeof(struct _Vehicle),f);
+    rewind(f);
+
+    fseek(f, OFR.Offset_To_Seats, SEEK_SET);
+    fwrite(&S, 1, sizeof(struct _Seat),f);
+    fwrite(&Se, 1, sizeof(struct _Seat),f);
+    fwrite(&Sea, 1, sizeof(struct _Seat),f);
     fclose(f);
 }
 
@@ -526,16 +1078,171 @@ void Load_On_Foot_Region(struct _Engine* Engine, struct _On_Foot_Region* On_Foot
     On_Foot_Region_File->Number_Of_Viewscreens = *(int*)&(Buffer[Buffer_Location+24]);
     On_Foot_Region_File->Number_Of_Characters = *(int*)&(Buffer[Buffer_Location+28]);
     On_Foot_Region_File->Number_Of_Goalposts = *(int*)&(Buffer[Buffer_Location+32]);
+    On_Foot_Region_File->Number_Of_Vehicles = *(int*)&(Buffer[Buffer_Location+36]);
+    On_Foot_Region_File->Number_Of_Seats = *(int*)&(Buffer[Buffer_Location+40]);
 
-    On_Foot_Region_File->Offset_To_Vertical_Collision_Geometries = *(int*)&(Buffer[Buffer_Location+36]);
-    On_Foot_Region_File->Offset_To_Horizontal_Collision_Geometries = *(int*)&(Buffer[Buffer_Location+40]);
-    On_Foot_Region_File->Offset_To_Slope_Collision_Geometries = *(int*)&(Buffer[Buffer_Location+44]);
-    On_Foot_Region_File->Offset_To_Terrains = *(int*)&(Buffer[Buffer_Location+48]);
-    On_Foot_Region_File->Offset_To_Doors = *(int*)&(Buffer[Buffer_Location+52]);
-    On_Foot_Region_File->Offset_To_Ships = *(int*)&(Buffer[Buffer_Location+56]);
-    On_Foot_Region_File->Offset_To_Viewscreens = *(int*)&(Buffer[Buffer_Location+60]);
-    On_Foot_Region_File->Offset_To_Characters = *(int*)&(Buffer[Buffer_Location+64]);
-    On_Foot_Region_File->Offset_To_Goalposts = *(int*)&(Buffer[Buffer_Location+68]);
+    On_Foot_Region_File->Offset_To_Vertical_Collision_Geometries = *(int*)&(Buffer[Buffer_Location+44]);
+    On_Foot_Region_File->Offset_To_Horizontal_Collision_Geometries = *(int*)&(Buffer[Buffer_Location+48]);
+    On_Foot_Region_File->Offset_To_Slope_Collision_Geometries = *(int*)&(Buffer[Buffer_Location+52]);
+    On_Foot_Region_File->Offset_To_Terrains = *(int*)&(Buffer[Buffer_Location+56]);
+    On_Foot_Region_File->Offset_To_Doors = *(int*)&(Buffer[Buffer_Location+60]);
+    On_Foot_Region_File->Offset_To_Ships = *(int*)&(Buffer[Buffer_Location+64]);
+    On_Foot_Region_File->Offset_To_Viewscreens = *(int*)&(Buffer[Buffer_Location+68]);
+    On_Foot_Region_File->Offset_To_Characters = *(int*)&(Buffer[Buffer_Location+72]);
+    On_Foot_Region_File->Offset_To_Goalposts = *(int*)&(Buffer[Buffer_Location+76]);
+    On_Foot_Region_File->Offset_To_Vehicles = *(int*)&(Buffer[Buffer_Location+80]);
+    On_Foot_Region_File->Offset_To_Seats = *(int*)&(Buffer[Buffer_Location+84]);
+
+
+    for(int j = 0; j <On_Foot_Region_File->Number_Of_Seats; j++)
+    {
+        On_Foot_Region->Seats[j] = (struct _Seat_Object*)calloc(1,sizeof(struct _Seat_Object));
+        Buffer_Location = On_Foot_Region_File->Offset_To_Seats + (j * sizeof(struct _Seat));
+        char Mesh_Filename[256];
+        char Texture_Filename[256];
+        for(int x = 0; x < 256; x++)
+        {
+            Mesh_Filename[x] = Buffer[Buffer_Location+x];
+            Texture_Filename[x] = Buffer[Buffer_Location+x+256];
+            printf("%c", Mesh_Filename[x]);
+        }
+        Buffer_Location += 512;
+
+        double x = *(double*)&(Buffer[Buffer_Location+0]);
+        double y = *(double*)&(Buffer[Buffer_Location+8]);
+        double z = *(double*)&(Buffer[Buffer_Location+16]);
+
+        double x1 = *(double*)&(Buffer[Buffer_Location+24]);
+        double y1 = *(double*)&(Buffer[Buffer_Location+32]);
+        double z1 = *(double*)&(Buffer[Buffer_Location+40]);
+
+        double x2 = *(double*)&(Buffer[Buffer_Location+48]);
+        double y2 = *(double*)&(Buffer[Buffer_Location+56]);
+        double z2 = *(double*)&(Buffer[Buffer_Location+64]);
+
+        double Eye_Offset_x = *(double*)&(Buffer[Buffer_Location+72]);
+        double Eye_Offset_y = *(double*)&(Buffer[Buffer_Location+80]);
+        double Eye_Offset_z = *(double*)&(Buffer[Buffer_Location+88]);
+
+        Buffer_Location += 8 * 12;
+
+        int Is_A_Drivers_Seat = *(int*)&(Buffer[Buffer_Location]);
+        int Seat_Contains_Console = *(int*)&(Buffer[Buffer_Location+4]);
+
+        Buffer_Location += 8;
+
+        double Screen_x1 = *(double*)&(Buffer[Buffer_Location]);
+        double Screen_y1 = *(double*)&(Buffer[Buffer_Location+8]);
+        double Screen_z1 = *(double*)&(Buffer[Buffer_Location+16]);
+
+        double Screen_x2 = *(double*)&(Buffer[Buffer_Location+24]);
+        double Screen_y2 = *(double*)&(Buffer[Buffer_Location+32]);
+        double Screen_z2 = *(double*)&(Buffer[Buffer_Location+40]);
+
+        double Screen_x3 = *(double*)&(Buffer[Buffer_Location+48]);
+        double Screen_y3 = *(double*)&(Buffer[Buffer_Location+56]);
+        double Screen_z3 = *(double*)&(Buffer[Buffer_Location+64]);
+
+        double Screen_x4 = *(double*)&(Buffer[Buffer_Location+72]);
+        double Screen_y4 = *(double*)&(Buffer[Buffer_Location+80]);
+        double Screen_z4 = *(double*)&(Buffer[Buffer_Location+88]);
+
+        Buffer_Location += 8 * 12;
+
+        unsigned char Red_Color_Balance = *(unsigned char*)&(Buffer[Buffer_Location]);
+        unsigned char Green_Color_Balance = *(unsigned char*)&(Buffer[Buffer_Location+1]);
+        unsigned char Blue_Color_Balance = *(unsigned char*)&(Buffer[Buffer_Location+2]);
+        bool Color_Mode = *(bool*)&(Buffer[Buffer_Location+3]);
+        bool Power_State = *(bool*)&(Buffer[Buffer_Location+4]);
+
+
+
+        On_Foot_Region->Seats[j]->Model = Create_SE3_Model();
+        Load_SE3_Model(On_Foot_Region->Seats[j]->Model, Mesh_Filename);
+        Load_SE3_Texture(On_Foot_Region->Seats[j]->Model, Texture_Filename);
+
+        On_Foot_Region->Seats[j]->x = x;
+        On_Foot_Region->Seats[j]->y = y;
+        On_Foot_Region->Seats[j]->z = z+Z_Offset;
+        On_Foot_Region->Seats[j]->Collision_Box.min.x = x1 + x;
+        On_Foot_Region->Seats[j]->Collision_Box.min.y = y1 + y;
+        On_Foot_Region->Seats[j]->Collision_Box.min.z = z1 + z+Z_Offset;
+
+        On_Foot_Region->Seats[j]->Collision_Box.max.x = x2 + x;
+        On_Foot_Region->Seats[j]->Collision_Box.max.y = y2 + y;
+        On_Foot_Region->Seats[j]->Collision_Box.max.z = z2 + z+Z_Offset;
+
+        On_Foot_Region->Seats[j]->Eye_Offset_x = Eye_Offset_x + x;
+        On_Foot_Region->Seats[j]->Eye_Offset_y = Eye_Offset_y + y;
+        On_Foot_Region->Seats[j]->Eye_Offset_z = Eye_Offset_z + z+Z_Offset;
+
+        On_Foot_Region->Seats[j]->Seat_Contains_Console = Seat_Contains_Console;
+        On_Foot_Region->Seats[j]->Is_A_Drivers_Seat = Is_A_Drivers_Seat;
+
+
+        On_Foot_Region->Seats[j]->Screen_x1 = Screen_x1;
+        On_Foot_Region->Seats[j]->Screen_y1 = Screen_y1;
+        On_Foot_Region->Seats[j]->Screen_z1 = Screen_z1+Z_Offset;
+
+        On_Foot_Region->Seats[j]->Screen_x2 = Screen_x2;
+        On_Foot_Region->Seats[j]->Screen_y2 = Screen_y2;
+        On_Foot_Region->Seats[j]->Screen_z2 = Screen_z2+Z_Offset;
+
+        On_Foot_Region->Seats[j]->Screen_x3 = Screen_x3;
+        On_Foot_Region->Seats[j]->Screen_y3 = Screen_y3;
+        On_Foot_Region->Seats[j]->Screen_z3 = Screen_z3+Z_Offset;
+
+        On_Foot_Region->Seats[j]->Screen_x4 = Screen_x4;
+        On_Foot_Region->Seats[j]->Screen_y4 = Screen_y4;
+        On_Foot_Region->Seats[j]->Screen_z4 = Screen_z4+Z_Offset;
+
+        On_Foot_Region->Seats[j]->New_Computer = Create_New_Computer();
+        Initialize_New_Computer(Engine, On_Foot_Region->Seats[j]);
+        Turn_Computer_Off(Engine, On_Foot_Region->Seats[j]);
+
+        On_Foot_Region->Seats[j]->TV_Mode = true;
+        On_Foot_Region->Seats[j]->TV_Mode_Switch_Was_Toggled = false;
+    }
+
+
+    for(int j = 0; j < On_Foot_Region_File->Number_Of_Vehicles; j++)
+    {
+        Buffer_Location = On_Foot_Region_File->Offset_To_Vehicles + (j * sizeof(struct _Vehicle));
+        On_Foot_Region->Submarine_Vehicles[j] = Create_Submarine_Object();
+
+        char Mesh_Filename[256];
+        char Texture_Filename[256];
+
+        for(int x = 0; x < 256; x++)
+        {
+            Mesh_Filename[x] = Buffer[Buffer_Location+x];
+            Texture_Filename[x] = Buffer[Buffer_Location+x+256];
+            printf("%c", Mesh_Filename[x]);
+        }
+        Buffer_Location += 512;
+
+        double x = *(double*)&(Buffer[Buffer_Location+0]);
+        double y = *(double*)&(Buffer[Buffer_Location+8]);
+        double z = *(double*)&(Buffer[Buffer_Location+16]);
+        double Roll = *(double*)&(Buffer[Buffer_Location+24]);
+        double Yaw = *(double*)&(Buffer[Buffer_Location+32]);
+        double Pitch = *(double*)&(Buffer[Buffer_Location+40]);
+        double Damage = *(double*)&(Buffer[Buffer_Location+48]);
+        double Entrance_Radius = *(double*)&(Buffer[Buffer_Location+56]);
+        Buffer_Location += 8 * 8;
+
+        bool Is_A_Proxy = Buffer[Buffer_Location+0];
+        int Proxy_ID = *(int*)&(Buffer[Buffer_Location+1]);
+        Buffer_Location += 5;
+
+        int Maximum_Passengers = *(int*)&(Buffer[Buffer_Location+0]);
+        int Number_Of_Passengers = *(int*)&(Buffer[Buffer_Location+4]);
+        Buffer_Location += 8;
+
+        struct _Universal_ID Passenger_IDs[256];
+
+        Initialize_On_Foot_Submarine_Object(On_Foot_Region->Submarine_Vehicles[j],x,y,z,Yaw,Pitch,Roll);
+    }
 
     for(int j = 0; j < On_Foot_Region_File->Number_Of_Goalposts; j++)
     {
@@ -563,7 +1270,7 @@ void Load_On_Foot_Region(struct _Engine* Engine, struct _On_Foot_Region* On_Foot
 
         On_Foot_Region->Goalposts[j]->x = x;
         On_Foot_Region->Goalposts[j]->y = y;
-        On_Foot_Region->Goalposts[j]->z = z;
+        On_Foot_Region->Goalposts[j]->z = z+Z_Offset;
         On_Foot_Region->Goalposts[j]->Radius = Radius;
         On_Foot_Region->Goalposts[j]->Clear_Category = Clear_Category;
     }
@@ -640,6 +1347,7 @@ void Load_On_Foot_Region(struct _Engine* Engine, struct _On_Foot_Region* On_Foot
         Buffer_Location = On_Foot_Region_File->Offset_To_Ships + (j * sizeof(struct _Ship));
         Engine->On_Foot_State->Ship_Objects[j] = (struct _Ship_Object*)calloc(1,sizeof(struct _Ship_Object));
         Engine->On_Foot_State->Current_Safe_Ship_Altitude += 5000;
+        printf("Making Ship at altitude %f\n", Engine->On_Foot_State->Current_Safe_Ship_Altitude);
 
         char Ship_Filename[256];
         for(int x = 0; x < 256; x++)
@@ -665,7 +1373,7 @@ void Load_On_Foot_Region(struct _Engine* Engine, struct _On_Foot_Region* On_Foot
         double y = *(double*)&(Buffer[Buffer_Location+8]);
         double z = *(double*)&(Buffer[Buffer_Location+16]);
 
-        On_Foot_Region->Ceilings[j]->Collision_Mesh = Create_Preloaded_Collision_Mesh(Mesh_Filename,x,y,z+Z_Offset);
+        On_Foot_Region->Ceilings[j]->Collision_Mesh = Create_Preloaded_Collision_Mesh(Mesh_Filename,0,0,Z_Offset);
     }
 
     for(int j = 0; j <On_Foot_Region_File->Number_Of_Horizontal_Collision_Geometries; j++)
@@ -683,7 +1391,7 @@ void Load_On_Foot_Region(struct _Engine* Engine, struct _On_Foot_Region* On_Foot
         double y = *(double*)&(Buffer[Buffer_Location+8]);
         double z = *(double*)&(Buffer[Buffer_Location+16]);
 
-        On_Foot_Region->Walls[j]->Collision_Mesh = Create_Preloaded_Collision_Mesh(Mesh_Filename,x,y,z+Z_Offset);
+        On_Foot_Region->Walls[j]->Collision_Mesh = Create_Preloaded_Collision_Mesh(Mesh_Filename,0,0,Z_Offset);
     }
 
     for(int j = 0; j <On_Foot_Region_File->Number_Of_Slope_Collision_Geometries; j++)
@@ -701,7 +1409,7 @@ void Load_On_Foot_Region(struct _Engine* Engine, struct _On_Foot_Region* On_Foot
         double y = *(double*)&(Buffer[Buffer_Location+8]);
         double z = *(double*)&(Buffer[Buffer_Location+16]);
 
-        On_Foot_Region->Slopes[j]->Collision_Mesh = Create_Preloaded_Collision_Mesh(Mesh_Filename,x,y,z+Z_Offset);
+        On_Foot_Region->Slopes[j]->Collision_Mesh = Create_Preloaded_Collision_Mesh(Mesh_Filename,0,0,Z_Offset);
     }
 
     for(int j = 0; j <On_Foot_Region_File->Number_Of_Terrains; j++)
@@ -895,6 +1603,10 @@ int Current_Stored_Ammo, int Ammo_Mode)
 
 void Initialize_On_Foot_State(struct _Engine* Engine)
 {
+    setupFBO(Engine);
+
+    Engine->On_Foot_State->Total_Cycles = 0;
+
     Engine->On_Foot_State->Go_Back_Timer = Create_Timer();
     Set_Timer(Engine->On_Foot_State->Go_Back_Timer);
     Pause_Timer(Engine->On_Foot_State->Go_Back_Timer);
@@ -958,6 +1670,10 @@ void Initialize_On_Foot_State(struct _Engine* Engine)
     Engine->USND_Vortex = Mix_LoadWAV( "resources/tracks_and_sounds/general/vortex.wav" );
 
     Engine->USND_Computer_Beep = Mix_LoadWAV( "resources/tracks_and_sounds/general/computer_keyboard_value_adjustment.wav");
+
+    Engine->USND_Power_On = Mix_LoadWAV( "resources/tracks_and_sounds/general/power_on.wav");
+
+    Engine->USND_Powered = Mix_LoadWAV( "resources/tracks_and_sounds/general/powered.wav");
 
     Write_Ship("testship");
     Write_On_Foot_Region("testregion");
@@ -1027,19 +1743,24 @@ void Initialize_On_Foot_State(struct _Engine* Engine)
 
     Engine->On_Foot_State->Rosechu = Create_SE3_Model();
 
-    Load_SE3_Model(Engine->On_Foot_State->Skybox,"model_skybox.se3");
-    Load_SE3_Model(Engine->On_Foot_State->Seabox, "model_skybox_ocean.se3");
-    Load_SE3_Model(Engine->On_Foot_State->Seasurfacebox,"model_ocean.se3");
-    Load_SE3_Model(Engine->On_Foot_State->Hyperbox, "model_hyperspace.se3");
+    Load_SE3_Model(Engine->On_Foot_State->Skybox,"resources/models/model_skybox.se3");
+    Load_SE3_Model(Engine->On_Foot_State->Seabox, "resources/models/model_skybox.se3");
+    Load_SE3_Model(Engine->On_Foot_State->Seasurfacebox,"resources/models/model_ocean.se3");
+    Load_SE3_Model(Engine->On_Foot_State->Hyperbox, "resources/models/model_hyperspace.se3");
 
-    Load_SE3_Model(Engine->On_Foot_State->Rosechu,"rosemary.se3");
+    Load_SE3_Model(Engine->On_Foot_State->Rosechu,"resources/models/rosemary.se3");
 
-    Load_SE3_Texture(Engine->On_Foot_State->Skybox,"texture_skybox.sei");
-    Load_SE3_Texture(Engine->On_Foot_State->Seabox, "texture_skybox_ocean.sei");
-    Load_SE3_Texture(Engine->On_Foot_State->Seasurfacebox,"texture_ocean.sei");
-    Load_SE3_Texture(Engine->On_Foot_State->Hyperbox, "rosemary.sei");
+    BMPtoSEI("resources/models/texture_ocean.bmp", "resources/models/texture_ocean.sei");
+    BMPtoSEI("resources/models/texture_skybox.bmp", "resources/models/texture_skybox.sei");
+    BMPtoSEI("resources/models/texture_skybox_ocean.bmp", "resources/models/texture_skybox_ocean.sei");
 
-    Load_SE3_Texture(Engine->On_Foot_State->Rosechu, "rosemary.sei");
+    Load_SE3_Texture(Engine->On_Foot_State->Skybox,"resources/models/texture_skybox.sei");
+    Load_SE3_Texture(Engine->On_Foot_State->Seabox, "resources/models/texture_skybox_ocean.sei");
+
+    Load_SE3_Texture(Engine->On_Foot_State->Seasurfacebox,"resources/models/texture_ocean.sei");
+    Load_SE3_Texture(Engine->On_Foot_State->Hyperbox, "resources/models/rosemary.sei");
+
+    Load_SE3_Texture(Engine->On_Foot_State->Rosechu, "resources/models/rosemary.sei");
 
     Engine->On_Foot_State->On_Foot_Player = Create_Player();
     Initialize_On_Foot_Player(Engine->On_Foot_State->On_Foot_Player, "none", 0,0,0);
@@ -1074,7 +1795,7 @@ void Initialize_On_Foot_State(struct _Engine* Engine)
     glDepthFunc(GL_LESS);
     glMatrixMode(GL_PROJECTION);
     glLoadIdentity();
-    gluPerspective(45, 1.7777,1.0f, METER_CONVERSION * 40000);
+    gluPerspective(60, 1.7777,1.0f, METER_CONVERSION*10000);
     glMatrixMode(GL_MODELVIEW);
     glLoadIdentity();
     gluLookAt(4,-4,-4,0,0,0,0,0,1);
@@ -1151,13 +1872,24 @@ void Initialize_On_Foot_State(struct _Engine* Engine)
 
 void Handle_Location_Rendering_Logic(struct _Engine* Engine)
 {
+    if(Engine->On_Foot_State->On_Foot_Player->z < 0)
+    {
+        Engine->On_Foot_State->Current_Location = CURRENT_LOCATION_UNDERWATER;
+    }
+
+    else if(Engine->On_Foot_State->On_Foot_Player->z >= 0)
+    {
+        Engine->On_Foot_State->Current_Location = CURRENT_LOCATION_SEA;
+    }
+
+
     switch(Engine->On_Foot_State->Current_Location)
         {
             case CURRENT_LOCATION_SEA:
                 glPushMatrix();
                 glTranslatef(0,0,0);
                 Render_SE3_Model(Engine->On_Foot_State->Skybox, 0,0,0,0,0,0,0,false,1,1,1,false);
-                Render_SE3_Model(Engine->On_Foot_State->Seasurfacebox, 0,0,0,0,0,0,0,false,1,1,1,false);
+                //Render_SE3_Model(Engine->On_Foot_State->Seasurfacebox, 0,0,0,0,0,0,0,false,1,1,1,false);
                 glPopMatrix();
             break;
 
@@ -1415,10 +2147,32 @@ void Handle_TwoD_HUD_Logic(struct _Engine* Engine)
 
     glMatrixMode(GL_PROJECTION);
     glLoadIdentity();
-    gluPerspective(60, 1.7777,1.0f, METER_CONVERSION * 40000);
+    gluPerspective(60, 1.7777,1.0f, METER_CONVERSION*10000);
     glMatrixMode(GL_MODELVIEW);
     glLoadIdentity();
     glEnable(GL_LIGHTING);
+}
+
+
+void Render_Submarine_Vehicles(struct _Engine* Engine)
+{
+    printf("There are %d vehicles\n", Engine->On_Foot_State->On_Foot_Region_File.Number_Of_Vehicles);
+    for(int j = 0; j < Engine->On_Foot_State->On_Foot_Region_File.Number_Of_Vehicles; j++)
+    {
+        glPushMatrix();
+        glTranslatef(Engine->On_Foot_State->On_Foot_Region.Submarine_Vehicles[j]->plane_x,Engine->On_Foot_State->On_Foot_Region.Submarine_Vehicles[j]->plane_y,Engine->On_Foot_State->On_Foot_Region.Submarine_Vehicles[j]->plane_z);
+
+        float mat[16] = {
+        (float)Engine->On_Foot_State->On_Foot_Region.Submarine_Vehicles[j]->Right_Vector.x, (float)Engine->On_Foot_State->On_Foot_Region.Submarine_Vehicles[j]->Right_Vector.y, (float)Engine->On_Foot_State->On_Foot_Region.Submarine_Vehicles[j]->Right_Vector.z, 0,
+        (float)Engine->On_Foot_State->On_Foot_Region.Submarine_Vehicles[j]->Up_Vector.x,    (float)Engine->On_Foot_State->On_Foot_Region.Submarine_Vehicles[j]->Up_Vector.y,    (float)Engine->On_Foot_State->On_Foot_Region.Submarine_Vehicles[j]->Up_Vector.z,    0,
+        -(float)Engine->On_Foot_State->On_Foot_Region.Submarine_Vehicles[j]->Forward_Vector.x,  -(float)Engine->On_Foot_State->On_Foot_Region.Submarine_Vehicles[j]->Forward_Vector.y,  -(float)Engine->On_Foot_State->On_Foot_Region.Submarine_Vehicles[j]->Forward_Vector.z,  0,
+        0,       0,       0,       1
+    };
+    glMultMatrixf(mat);
+
+        Render_SE3_Model(Engine->On_Foot_State->On_Foot_Region.Submarine_Vehicles[j]->Models[0], 0,0,0,0,0,0,0,false,1,1,1,false);
+        glPopMatrix();
+    }
 }
 
 void Render_Viewscreens(struct _Engine* Engine)
@@ -1442,6 +2196,28 @@ void Render_Goalposts(struct _Engine* Engine)
         glPushMatrix();
         glTranslatef(Engine->On_Foot_State->On_Foot_Region.Goalposts[j]->x,Engine->On_Foot_State->On_Foot_Region.Goalposts[j]->y,Engine->On_Foot_State->On_Foot_Region.Goalposts[j]->z);
         Render_SE3_Model(Engine->On_Foot_State->On_Foot_Region.Goalposts[j]->Model, 0,0,0,0,0,0,0,false,1,1,1,false);
+        glPopMatrix();
+    }
+}
+
+void Render_Seats(struct _Engine* Engine)
+{
+    for(int j = 0; j < Engine->On_Foot_State->On_Foot_Region_File.Number_Of_Seats; j++)
+    {
+        glPushMatrix();
+        glTranslatef(Engine->On_Foot_State->On_Foot_Region.Seats[j]->x,Engine->On_Foot_State->On_Foot_Region.Seats[j]->y,Engine->On_Foot_State->On_Foot_Region.Seats[j]->z);
+        Render_SE3_Model(Engine->On_Foot_State->On_Foot_Region.Seats[j]->Model, 0,0,0,0,0,0,0,false,1,1,1,false);
+
+        if(Engine->On_Foot_State->On_Foot_Region.Seats[j]->TV_Mode)
+        {
+            Draw_TV_Vertices(Engine->On_Foot_State->textureColorBuffer,Engine->On_Foot_State->On_Foot_Region.Seats[j]->Screen_x1,Engine->On_Foot_State->On_Foot_Region.Seats[j]->Screen_y1,Engine->On_Foot_State->On_Foot_Region.Seats[j]->Screen_z1,Engine->On_Foot_State->On_Foot_Region.Seats[j]->Screen_x2,Engine->On_Foot_State->On_Foot_Region.Seats[j]->Screen_y2,Engine->On_Foot_State->On_Foot_Region.Seats[j]->Screen_z2,Engine->On_Foot_State->On_Foot_Region.Seats[j]->Screen_x3,Engine->On_Foot_State->On_Foot_Region.Seats[j]->Screen_y3,Engine->On_Foot_State->On_Foot_Region.Seats[j]->Screen_z3,Engine->On_Foot_State->On_Foot_Region.Seats[j]->Screen_x4,Engine->On_Foot_State->On_Foot_Region.Seats[j]->Screen_y4,Engine->On_Foot_State->On_Foot_Region.Seats[j]->Screen_z4);
+        }
+
+        else if(!Engine->On_Foot_State->On_Foot_Region.Seats[j]->TV_Mode)
+        {
+            Draw_TV_Vertices(Engine->On_Foot_State->On_Foot_Region.Seats[j]->New_Computer->Texture_ID,Engine->On_Foot_State->On_Foot_Region.Seats[j]->Screen_x1,Engine->On_Foot_State->On_Foot_Region.Seats[j]->Screen_y1,Engine->On_Foot_State->On_Foot_Region.Seats[j]->Screen_z1,Engine->On_Foot_State->On_Foot_Region.Seats[j]->Screen_x2,Engine->On_Foot_State->On_Foot_Region.Seats[j]->Screen_y2,Engine->On_Foot_State->On_Foot_Region.Seats[j]->Screen_z2,Engine->On_Foot_State->On_Foot_Region.Seats[j]->Screen_x3,Engine->On_Foot_State->On_Foot_Region.Seats[j]->Screen_y3,Engine->On_Foot_State->On_Foot_Region.Seats[j]->Screen_z3,Engine->On_Foot_State->On_Foot_Region.Seats[j]->Screen_x4,Engine->On_Foot_State->On_Foot_Region.Seats[j]->Screen_y4,Engine->On_Foot_State->On_Foot_Region.Seats[j]->Screen_z4);
+        }
+
         glPopMatrix();
     }
 }
@@ -1482,6 +2258,28 @@ void Render_Ship_Viewscreens(struct _Engine* Engine, int ID)
     }
 }
 
+void Render_Ship_Seats(struct _Engine* Engine, int ID)
+{
+    for(int j = 0; j < Engine->On_Foot_State->Ship_Objects[ID]->Ship_Interior_File.Number_Of_Seats; j++)
+    {
+        glPushMatrix();
+        glTranslatef(Engine->On_Foot_State->Ship_Objects[ID]->Ship_Interior.Seats[j]->x,Engine->On_Foot_State->Ship_Objects[ID]->Ship_Interior.Seats[j]->y,Engine->On_Foot_State->Ship_Objects[ID]->Ship_Interior.Seats[j]->z);
+        Render_SE3_Model(Engine->On_Foot_State->Ship_Objects[ID]->Ship_Interior.Seats[j]->Model, 0,0,0,0,0,0,0,false,1,1,1,false);
+        glPopMatrix();
+    }
+}
+
+void Render_Ship_Goalposts(struct _Engine* Engine, int ID)
+{
+    for(int j = 0; j < Engine->On_Foot_State->Ship_Objects[ID]->Ship_Interior_File.Number_Of_Goalposts; j++)
+    {
+        glPushMatrix();
+        glTranslatef(Engine->On_Foot_State->Ship_Objects[ID]->Ship_Interior.Goalposts[j]->x,Engine->On_Foot_State->Ship_Objects[ID]->Ship_Interior.Goalposts[j]->y,Engine->On_Foot_State->Ship_Objects[ID]->Ship_Interior.Goalposts[j]->z);
+        Render_SE3_Model(Engine->On_Foot_State->Ship_Objects[ID]->Ship_Interior.Goalposts[j]->Model, 0,0,0,0,0,0,0,false,1,1,1,false);
+        glPopMatrix();
+    }
+}
+
 void Render_Characters(struct _Engine* Engine, int ID)
 {
     glPushMatrix();
@@ -1499,56 +2297,6 @@ void Render_Ship_Doors(struct _Engine* Engine, int ID)
         glTranslatef(Engine->On_Foot_State->Ship_Objects[ID]->Ship_Interior.Doors[j]->x,Engine->On_Foot_State->Ship_Objects[ID]->Ship_Interior.Doors[j]->y,Engine->On_Foot_State->Ship_Objects[ID]->Ship_Interior.Doors[j]->z);
         Render_SE3_Model(Engine->On_Foot_State->Ship_Objects[ID]->Ship_Interior.Doors[j]->Door_Model, 0,0,0,0,0,0,0,false,1,1,1,false);
         glPopMatrix();
-
-
-         glPushMatrix();
-        glTranslatef(Engine->On_Foot_State->Ship_Objects[ID]->Ship_Interior.Doors[j]->Entrance_AABB.min.x,Engine->On_Foot_State->Ship_Objects[ID]->Ship_Interior.Doors[j]->Entrance_AABB.min.y,Engine->On_Foot_State->Ship_Objects[ID]->Ship_Interior.Doors[j]->Entrance_AABB.min.z);
-        glPointSize(80.0); // Set the size of the rendered points
-        glBegin(GL_POINTS);
-        // Point 1: Red at (1.0, 0.0, 0.0)
-        glColor3f(1.0, 0.0, 0.0);
-        glVertex3f(0,0,0);
-        glEnd();
-        glPopMatrix();
-
-
-         glPushMatrix();
-        glTranslatef(Engine->On_Foot_State->Ship_Objects[ID]->Ship_Interior.Doors[j]->Entrance_AABB.max.x,Engine->On_Foot_State->Ship_Objects[ID]->Ship_Interior.Doors[j]->Entrance_AABB.max.y,Engine->On_Foot_State->Ship_Objects[ID]->Ship_Interior.Doors[j]->Entrance_AABB.max.z);
-        glPointSize(80.0); // Set the size of the rendered points
-        glBegin(GL_POINTS);
-        // Point 1: Red at (1.0, 0.0, 0.0)
-        glColor3f(1.0, 0.0, 0.0);
-        glVertex3f(0,0,0);
-        glEnd();
-        glPopMatrix();
-
-
-
-
-
-
-
-
-        glPushMatrix();
-        glTranslatef(Engine->On_Foot_State->Ship_Objects[ID]->Ship_Interior.Doors[j]->Exit_AABB.min.x,Engine->On_Foot_State->Ship_Objects[ID]->Ship_Interior.Doors[j]->Exit_AABB.min.y,Engine->On_Foot_State->Ship_Objects[ID]->Ship_Interior.Doors[j]->Exit_AABB.min.z);
-        glPointSize(80.0); // Set the size of the rendered points
-        glBegin(GL_POINTS);
-        // Point 1: Red at (1.0, 0.0, 0.0)
-        glColor3f(0.0, 1.0, 0.0);
-        glVertex3f(0,0,0);
-        glEnd();
-        glPopMatrix();
-
-
-         glPushMatrix();
-        glTranslatef(Engine->On_Foot_State->Ship_Objects[ID]->Ship_Interior.Doors[j]->Exit_AABB.max.x,Engine->On_Foot_State->Ship_Objects[ID]->Ship_Interior.Doors[j]->Exit_AABB.max.y,Engine->On_Foot_State->Ship_Objects[ID]->Ship_Interior.Doors[j]->Exit_AABB.max.z);
-        glPointSize(80.0); // Set the size of the rendered points
-        glBegin(GL_POINTS);
-        // Point 1: Red at (1.0, 0.0, 0.0)
-        glColor3f(0.0, 1.0, 0.0);
-        glVertex3f(0,0,0);
-        glEnd();
-        glPopMatrix();
     }
 }
 
@@ -1560,57 +2308,6 @@ void Render_Doors(struct _Engine* Engine)
         glTranslatef(Engine->On_Foot_State->On_Foot_Region.Doors[j]->x,Engine->On_Foot_State->On_Foot_Region.Doors[j]->y,Engine->On_Foot_State->On_Foot_Region.Doors[j]->z);
        //printf("Door coordinates: %f %f %f\n", Engine->On_Foot_State->On_Foot_Region.Doors[j]->x,Engine->On_Foot_State->On_Foot_Region.Doors[j]->y,Engine->On_Foot_State->On_Foot_Region.Doors[j]->z);
         Render_SE3_Model(Engine->On_Foot_State->On_Foot_Region.Doors[j]->Door_Model, 0,0,0,0,0,0,0,false,1,1,1,false);
-        glPopMatrix();
-
-
-
-        glPushMatrix();
-        glTranslatef(Engine->On_Foot_State->On_Foot_Region.Doors[j]->Entrance_AABB.min.x,Engine->On_Foot_State->On_Foot_Region.Doors[j]->Entrance_AABB.min.y,Engine->On_Foot_State->On_Foot_Region.Doors[j]->Entrance_AABB.min.z);
-        glPointSize(80.0); // Set the size of the rendered points
-        glBegin(GL_POINTS);
-        // Point 1: Red at (1.0, 0.0, 0.0)
-        glColor3f(1.0, 0.0, 0.0);
-        glVertex3f(0,0,0);
-        glEnd();
-        glPopMatrix();
-
-
-         glPushMatrix();
-        glTranslatef(Engine->On_Foot_State->On_Foot_Region.Doors[j]->Entrance_AABB.max.x,Engine->On_Foot_State->On_Foot_Region.Doors[j]->Entrance_AABB.max.y,Engine->On_Foot_State->On_Foot_Region.Doors[j]->Entrance_AABB.max.z);
-        glPointSize(80.0); // Set the size of the rendered points
-        glBegin(GL_POINTS);
-        // Point 1: Red at (1.0, 0.0, 0.0)
-        glColor3f(1.0, 0.0, 0.0);
-        glVertex3f(0,0,0);
-        glEnd();
-        glPopMatrix();
-
-
-
-
-
-
-
-
-        glPushMatrix();
-        glTranslatef(Engine->On_Foot_State->On_Foot_Region.Doors[j]->Exit_AABB.min.x,Engine->On_Foot_State->On_Foot_Region.Doors[j]->Exit_AABB.min.y,Engine->On_Foot_State->On_Foot_Region.Doors[j]->Exit_AABB.min.z);
-        glPointSize(80.0); // Set the size of the rendered points
-        glBegin(GL_POINTS);
-        // Point 1: Red at (1.0, 0.0, 0.0)
-        glColor3f(0.0, 1.0, 0.0);
-        glVertex3f(0,0,0);
-        glEnd();
-        glPopMatrix();
-
-
-         glPushMatrix();
-        glTranslatef(Engine->On_Foot_State->On_Foot_Region.Doors[j]->Exit_AABB.max.x,Engine->On_Foot_State->On_Foot_Region.Doors[j]->Exit_AABB.max.y,Engine->On_Foot_State->On_Foot_Region.Doors[j]->Exit_AABB.max.z);
-        glPointSize(80.0); // Set the size of the rendered points
-        glBegin(GL_POINTS);
-        // Point 1: Red at (1.0, 0.0, 0.0)
-        glColor3f(0.0, 1.0, 0.0);
-        glVertex3f(0,0,0);
-        glEnd();
         glPopMatrix();
     }
 }
@@ -1625,38 +2322,107 @@ void Render_Weapon_Rounds(struct _Engine* Engine)
     //printf("My Current Weapon is %d and My Cooldown is %f and My Reload is %f\n", Engine->On_Foot_State->On_Foot_Player->Current_Weapon,Engine->On_Foot_State->On_Foot_Player->Current_Cooldown_Time,Engine->On_Foot_State->On_Foot_Player->Current_Reload_Time);
 }
 
-void Render_On_Foot_State(struct _Engine* Engine)
+
+void Render_Second_Pass(struct _Engine* Engine)
 {
+    Render_Terrains(Engine);
+    Render_Doors(Engine);
+    Render_Viewscreens(Engine);
+    Render_Goalposts(Engine);
+    //Render_Submarine_Vehicles(Engine);
+    //Render_Seats(Engine);
+
+    for(int j = 0; j < Engine->On_Foot_State->On_Foot_Region_File.Number_Of_Characters; j++)
+            {
+                if(Engine->On_Foot_State->SENC->local_players[j].active == 1)
+                {
+                    Render_Characters(Engine, j);
+                }
+            }
+
+    Handle_Location_Rendering_Logic(Engine);
+   Render_Weapon_Rounds(Engine);
+}
+
+
+void Render_On_Foot_State(struct _Engine* Engine, struct _Audio_Chip* Audio_Chip)
+{
+    for(int j = 0; j < Engine->On_Foot_State->On_Foot_Region_File.Number_Of_Seats; j++)
+    {
+        if(Engine->On_Foot_State->On_Foot_Region.Seats[j]->New_Computer->Power_State)
+        {
+            Process_New_Computer_Cycles(Engine, Engine->On_Foot_State->On_Foot_Region.Seats[j], 10, Audio_Chip);
+        }
+    }
+
     if(Engine->On_Foot_State->Render)
     {
-    if(Engine->On_Foot_State->Current_State == STATE_UNPAUSED)
-    {
-        Render_Terrains(Engine);
-        Render_Doors(Engine);
-        Render_Viewscreens(Engine);
-        Render_Goalposts(Engine);
-
-        for(int j = 0; j < Engine->On_Foot_State->On_Foot_Region_File.Number_Of_Characters; j++)
+        if(Engine->On_Foot_State->Current_State == STATE_UNPAUSED)
         {
-            if(Engine->On_Foot_State->SENC->local_players[j].active == 1)
+            if(!Engine->On_Foot_State->On_Foot_Player->Is_On_A_Ship)
             {
-                Render_Characters(Engine, j);
+                Render_Terrains(Engine);
+                Render_Doors(Engine);
+                Render_Viewscreens(Engine);
+                Render_Goalposts(Engine);
+                Render_Seats(Engine);
             }
+
+            Render_Submarine_Vehicles(Engine);
+
+            for(int j = 0; j < Engine->On_Foot_State->On_Foot_Region_File.Number_Of_Characters; j++)
+            {
+                if(Engine->On_Foot_State->SENC->local_players[j].active == 1)
+                {
+                    Render_Characters(Engine, j);
+                }
+            }
+
+            if(Engine->On_Foot_State->On_Foot_Player->Is_On_A_Ship)
+            {
+                Render_Ship_Terrains(Engine,Engine->On_Foot_State->On_Foot_Player->On_This_Ship);
+                Render_Ship_Doors(Engine,Engine->On_Foot_State->On_Foot_Player->On_This_Ship);
+                Render_Ship_Viewscreens(Engine,Engine->On_Foot_State->On_Foot_Player->On_This_Ship);
+                Render_Ship_Goalposts(Engine,Engine->On_Foot_State->On_Foot_Player->On_This_Ship);
+               // Render_Ship_Submarine_Vehicles(Engine,j);
+                Render_Ship_Seats(Engine,Engine->On_Foot_State->On_Foot_Player->On_This_Ship);
+            }
+
+            Handle_Location_Rendering_Logic(Engine);
+            Render_Player_Subroutine(Engine);
+            Render_Weapon_Rounds(Engine);
+
+            glBindFramebuffer(GL_FRAMEBUFFER, Engine->On_Foot_State->fbo);
+            glViewport(0, 0, 256,256);
+            glClearColor(0.1f, 0.1f, 0.1f, 1.0f);
+            glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+            glMatrixMode(GL_PROJECTION);
+            glLoadIdentity();
+            gluPerspective(60, 1.0f,1.0f, METER_CONVERSION*10000);
+            glMatrixMode(GL_MODELVIEW);
+            glLoadIdentity();
+
+            Vec3 cam;
+            cam.x = Engine->On_Foot_State->On_Foot_Region.Submarine_Vehicles[0]->plane_x - Engine->On_Foot_State->On_Foot_Region.Submarine_Vehicles[0]->Forward_Vector.x * 2000 + Engine->On_Foot_State->On_Foot_Region.Submarine_Vehicles[0]->Up_Vector.x * 30.0f;
+            cam.y = Engine->On_Foot_State->On_Foot_Region.Submarine_Vehicles[0]->plane_y - Engine->On_Foot_State->On_Foot_Region.Submarine_Vehicles[0]->Forward_Vector.y * 2000 + Engine->On_Foot_State->On_Foot_Region.Submarine_Vehicles[0]->Up_Vector.y * 30.0f;
+            cam.z = Engine->On_Foot_State->On_Foot_Region.Submarine_Vehicles[0]->plane_z - Engine->On_Foot_State->On_Foot_Region.Submarine_Vehicles[0]->Forward_Vector.z * 2000 + Engine->On_Foot_State->On_Foot_Region.Submarine_Vehicles[0]->Up_Vector.z * 30.0f;
+
+            gluLookAt(cam.x, cam.y, cam.z, Engine->On_Foot_State->On_Foot_Region.Submarine_Vehicles[0]->plane_x, Engine->On_Foot_State->On_Foot_Region.Submarine_Vehicles[0]->plane_y, Engine->On_Foot_State->On_Foot_Region.Submarine_Vehicles[0]->plane_z, Engine->On_Foot_State->On_Foot_Region.Submarine_Vehicles[0]->Up_Vector.x, Engine->On_Foot_State->On_Foot_Region.Submarine_Vehicles[0]->Up_Vector.y, Engine->On_Foot_State->On_Foot_Region.Submarine_Vehicles[0]->Up_Vector.z);
+
+            Render_Second_Pass(Engine);
+
+            glBindFramebuffer(GL_FRAMEBUFFER, 0);
+            glViewport(0, 0, 1920,1080);
+            glMatrixMode(GL_PROJECTION);
+            glLoadIdentity();
+            gluPerspective(60, 1.7777,1.0f, METER_CONVERSION*10000);
+            glMatrixMode(GL_MODELVIEW);
+            glLoadIdentity();
+
+
+            Handle_TwoD_HUD_Logic(Engine);
         }
-
-        for(int j = 0; j < Engine->On_Foot_State->On_Foot_Region_File.Number_Of_Ships; j++)
-        {
-            Render_Ship_Terrains(Engine,j);
-            Render_Ship_Doors(Engine,j);
-            Render_Ship_Viewscreens(Engine,j);
-        }
-
-        Handle_Location_Rendering_Logic(Engine);
-
-        Render_Player_Subroutine(Engine);
-        Render_Weapon_Rounds(Engine);
-        Handle_TwoD_HUD_Logic(Engine);
-    }
 
     if(Engine->On_Foot_State->Current_State == STATE_PAUSED)
     {
@@ -1787,10 +2553,32 @@ void Handle_Cutscene_Start_Logic(struct _Engine* Engine, struct _Keypad Keypad)
 
 
 
-void Input_On_Foot_State(struct _Engine* Engine, struct _Keypad Keypad)
+void Input_On_Foot_State(struct _Engine* Engine, struct _Keypad Keypad, struct _Audio_Chip* Audio_Chip)
 {
+
+    for(int j = 0; j < Engine->On_Foot_State->On_Foot_Region_File.Number_Of_Seats; j++)
+    {
+        if(Engine->On_Foot_State->On_Foot_Region.Seats[j]->New_Computer->Power_State)
+        {
+            Process_New_Computer_Cycles(Engine, Engine->On_Foot_State->On_Foot_Region.Seats[j], 10, Audio_Chip);
+        }
+    }
+
     if(Engine->On_Foot_State->Render)
     {
+
+        for(int j = 0; j < Engine->On_Foot_State->On_Foot_Region_File.Number_Of_Seats; j++)
+        {
+            if(Engine->On_Foot_State->On_Foot_Region.Seats[j]->New_Computer->Power_State)
+            {
+                Render_New_Computer(Engine, Engine->On_Foot_State->On_Foot_Region.Seats[j]);
+                if(Engine->On_Foot_State->On_Foot_Player->Is_Locked_Into_Chair)
+                {
+                    Handle_New_Computer_Inputs(Engine, Engine->On_Foot_State->On_Foot_Region.Seats[Engine->On_Foot_State->On_Foot_Player->Chair_ID], Keypad);
+                }
+            }
+        }
+
     if(Engine->On_Foot_State->Current_State == STATE_UNPAUSED)
     {
         for(int r = 0; r < Engine->On_Foot_State->On_Foot_Region_File.Number_Of_Goalposts; r++)
@@ -1921,10 +2709,43 @@ void Input_On_Foot_State(struct _Engine* Engine, struct _Keypad Keypad)
         {
             mouseMotion(Engine, Keypad.Mouse_X, Keypad.Mouse_Y, Keypad);
             Handle_Item_Logic(Engine, Keypad);
-            Handle_Player_Inputs(Engine->On_Foot_State->SENC, Engine->On_Foot_State->Connection_Status, Engine->On_Foot_State->On_Foot_Player, Keypad, &Engine->On_Foot_State->On_Foot_Region, &Engine->On_Foot_State->On_Foot_Region_File);
 
+            if(Engine->On_Foot_State->On_Foot_Player->Current_Location == LOCATION_ON_FOOT)
+            {
+            Handle_Player_Inputs(Engine, Engine->On_Foot_State->SENC, Engine->On_Foot_State->Connection_Status, Engine->On_Foot_State->On_Foot_Player, Keypad, &Engine->On_Foot_State->On_Foot_Region, &Engine->On_Foot_State->On_Foot_Region_File);
+            }
 
+            if(Engine->On_Foot_State->On_Foot_Player->Is_Locked_Into_Chair)
+            {
+                Handle_Submarine_Object_Inputs(Engine, Keypad, 0);
+            }
 
+            else if(Engine->On_Foot_State->On_Foot_Player->Current_Location == LOCATION_SUBMARINE_VEHICLE)
+            {
+                Handle_Submarine_Object_Inputs(Engine, Keypad, 0);
+                if(Keypad.Keyboard_F) //Dismount
+                    {
+                            printf("Dismounted Vehicle\n");
+                            Engine->On_Foot_State->On_Foot_Player->Current_Location = LOCATION_ON_FOOT;
+                            Engine->On_Foot_State->On_Foot_Player->x = Engine->On_Foot_State->On_Foot_Region.Submarine_Vehicles[0]->plane_x;
+                            Engine->On_Foot_State->On_Foot_Player->y = Engine->On_Foot_State->On_Foot_Region.Submarine_Vehicles[0]->plane_y;
+                            Engine->On_Foot_State->On_Foot_Player->z = Engine->On_Foot_State->On_Foot_Region.Submarine_Vehicles[0]->plane_z;
+
+                            Engine->On_Foot_State->On_Foot_Player->Visible = true;
+                            Engine->On_Foot_State->On_Foot_Player->Injurable = true;
+
+                            for(int n = 0; n < 256; n++)
+                            {
+                                Engine->On_Foot_State->On_Foot_Region.Submarine_Vehicles[0]->Passenger_IDs[Engine->On_Foot_State->On_Foot_Player->Am_This_Passenger].Name[n] = 0;
+                            }
+                            Engine->On_Foot_State->On_Foot_Region.Submarine_Vehicles[0]->Passenger_IDs[Engine->On_Foot_State->On_Foot_Player->Am_This_Passenger].Category = 0;
+                            Engine->On_Foot_State->On_Foot_Region.Submarine_Vehicles[0]->Passenger_IDs[Engine->On_Foot_State->On_Foot_Player->Am_This_Passenger].Subcategory = 0;
+                            Engine->On_Foot_State->On_Foot_Region.Submarine_Vehicles[0]->Passenger_IDs[Engine->On_Foot_State->On_Foot_Player->Am_This_Passenger].Variant = 0;
+                            Engine->On_Foot_State->On_Foot_Region.Submarine_Vehicles[0]->Passenger_IDs[Engine->On_Foot_State->On_Foot_Player->Am_This_Passenger].ID = 0;
+
+                            Engine->On_Foot_State->On_Foot_Region.Submarine_Vehicles[0]->Number_Of_Passengers -= 1;
+                    }
+            }
         }
 
         if(Keypad.Keyboard_Start && !Engine->On_Foot_State->Pause_Button_Pressed)
@@ -1939,16 +2760,18 @@ void Input_On_Foot_State(struct _Engine* Engine, struct _Keypad Keypad)
 
         if(Keypad.Keyboard_A)
         {
-            if(Engine->On_Foot_State->Current_Player_State == PLAYER_IS_ON_FOOT || Engine->On_Foot_State->Current_Player_State == PLAYER_IS_ONBOARD)
+            if(Engine->On_Foot_State->On_Foot_Player->Is_Locked_Into_Chair)
             {
-                //Cutscenen start logic
-                Handle_Cutscene_Start_Logic(Engine, Keypad);
+                    Engine->On_Foot_State->On_Foot_Player->Is_Locked_Into_Chair = false;
+                    Engine->On_Foot_State->On_Foot_Player->Chair_ID = -1;
+                    Engine->On_Foot_State->On_Foot_Player->Jump_Not_Pressed = false;
+                    Engine->On_Foot_State->On_Foot_Player->displacement.z = 3;
             }
         }
 
         for(int j = 0; j < Engine->On_Foot_State->On_Foot_Region_File.Number_Of_Characters; j++)
         {
-            Generate_Player_Inputs(Engine->On_Foot_State->SENC, Engine->On_Foot_State->Connection_Status, Engine->On_Foot_State->On_Foot_Region.Characters[j], Keypad, &Engine->On_Foot_State->On_Foot_Region, &Engine->On_Foot_State->On_Foot_Region_File);
+            Generate_Player_Inputs(Engine->On_Foot_State->SENC, Engine->On_Foot_State->Connection_Status, Engine, Engine->On_Foot_State->On_Foot_Region.Characters[j], Keypad, &Engine->On_Foot_State->On_Foot_Region, &Engine->On_Foot_State->On_Foot_Region_File);
         }
     }
 
@@ -2042,29 +2865,64 @@ void Handle_Unpaused_Processing(struct _Engine* Engine)
             }
         }
 
-        Engine->On_Foot_State->Camera_X = Engine->On_Foot_State->On_Foot_Player->x;
-        Engine->On_Foot_State->Camera_Y = Engine->On_Foot_State->On_Foot_Player->y;
-        Engine->On_Foot_State->Camera_Z = Engine->On_Foot_State->On_Foot_Player->z+40;
+        for(int j = 0; j < Engine->On_Foot_State->On_Foot_Region_File.Number_Of_Vehicles; j++)
+    {
+        Process_Submarine_Object(Engine,j);
+    }
 
-        glMatrixMode(GL_MODELVIEW);
-        glLoadIdentity();
-        gluLookAt(Engine->On_Foot_State->Camera_X, Engine->On_Foot_State->Camera_Y, Engine->On_Foot_State->Camera_Z,Engine->On_Foot_State->Camera_X + Engine->On_Foot_State->Camera_Front_X, Engine->On_Foot_State->Camera_Y + Engine->On_Foot_State->Camera_Front_Y, Engine->On_Foot_State->Camera_Z + Engine->On_Foot_State->Camera_Front_Z,0,0,1);
+        if(Engine->On_Foot_State->On_Foot_Player->Current_Location == LOCATION_ON_FOOT)
+        {
 
-        GLfloat light_position[] = { (float)Engine->On_Foot_State->Camera_X, (float)Engine->On_Foot_State->Camera_Y, (float)Engine->On_Foot_State->Camera_Z, 1.0 };
-        glLightfv(GL_LIGHT1, GL_POSITION, light_position);
-        GLfloat spot_direction[] = { (float)Engine->On_Foot_State->Camera_Front_X, (float)Engine->On_Foot_State->Camera_Front_Y, (float)Engine->On_Foot_State->Camera_Front_Z};
-        glLightfv(GL_LIGHT1, GL_SPOT_DIRECTION, spot_direction);
+            Engine->On_Foot_State->Camera_X = Engine->On_Foot_State->On_Foot_Player->x;
+            Engine->On_Foot_State->Camera_Y = Engine->On_Foot_State->On_Foot_Player->y;
+            Engine->On_Foot_State->Camera_Z = Engine->On_Foot_State->On_Foot_Player->z+40;
 
+            glMatrixMode(GL_MODELVIEW);
+            glLoadIdentity();
+            gluLookAt(Engine->On_Foot_State->Camera_X, Engine->On_Foot_State->Camera_Y, Engine->On_Foot_State->Camera_Z,Engine->On_Foot_State->Camera_X + Engine->On_Foot_State->Camera_Front_X, Engine->On_Foot_State->Camera_Y + Engine->On_Foot_State->Camera_Front_Y, Engine->On_Foot_State->Camera_Z + Engine->On_Foot_State->Camera_Front_Z,0,0,1);
+
+            GLfloat light_position[] = { (float)Engine->On_Foot_State->Camera_X, (float)Engine->On_Foot_State->Camera_Y, (float)Engine->On_Foot_State->Camera_Z, 1.0 };
+            glLightfv(GL_LIGHT1, GL_POSITION, light_position);
+            GLfloat spot_direction[] = { (float)Engine->On_Foot_State->Camera_Front_X, (float)Engine->On_Foot_State->Camera_Front_Y, (float)Engine->On_Foot_State->Camera_Front_Z};
+            glLightfv(GL_LIGHT1, GL_SPOT_DIRECTION, spot_direction);
+        }
+
+
+        else if(Engine->On_Foot_State->On_Foot_Player->Current_Location == LOCATION_SUBMARINE_VEHICLE)
+        {
+                Vec3 cam;
+                cam.x = Engine->On_Foot_State->On_Foot_Region.Submarine_Vehicles[0]->plane_x - Engine->On_Foot_State->On_Foot_Region.Submarine_Vehicles[0]->Forward_Vector.x * 2000 + Engine->On_Foot_State->On_Foot_Region.Submarine_Vehicles[0]->Up_Vector.x * 30.0f;
+                cam.y = Engine->On_Foot_State->On_Foot_Region.Submarine_Vehicles[0]->plane_y - Engine->On_Foot_State->On_Foot_Region.Submarine_Vehicles[0]->Forward_Vector.y * 2000 + Engine->On_Foot_State->On_Foot_Region.Submarine_Vehicles[0]->Up_Vector.y * 30.0f;
+                cam.z = Engine->On_Foot_State->On_Foot_Region.Submarine_Vehicles[0]->plane_z - Engine->On_Foot_State->On_Foot_Region.Submarine_Vehicles[0]->Forward_Vector.z * 2000 + Engine->On_Foot_State->On_Foot_Region.Submarine_Vehicles[0]->Up_Vector.z * 30.0f;
+
+                glMatrixMode(GL_MODELVIEW);
+                glLoadIdentity();
+                gluLookAt(cam.x, cam.y, cam.z, Engine->On_Foot_State->On_Foot_Region.Submarine_Vehicles[0]->plane_x, Engine->On_Foot_State->On_Foot_Region.Submarine_Vehicles[0]->plane_y, Engine->On_Foot_State->On_Foot_Region.Submarine_Vehicles[0]->plane_z, Engine->On_Foot_State->On_Foot_Region.Submarine_Vehicles[0]->Up_Vector.x, Engine->On_Foot_State->On_Foot_Region.Submarine_Vehicles[0]->Up_Vector.y, Engine->On_Foot_State->On_Foot_Region.Submarine_Vehicles[0]->Up_Vector.z);
+
+        }
 }
 
-void Process_On_Foot_State(struct _Engine* Engine)
+void Process_On_Foot_State(struct _Engine* Engine, struct _Audio_Chip* Audio_Chip)
 {
+
+    for(int j = 0; j < Engine->On_Foot_State->On_Foot_Region_File.Number_Of_Seats; j++)
+    {
+        if(Engine->On_Foot_State->On_Foot_Region.Seats[j]->New_Computer->Power_State)
+        {
+            Process_New_Computer_Cycles(Engine, Engine->On_Foot_State->On_Foot_Region.Seats[j], 10, Audio_Chip);
+        }
+    }
+
+
     if(Engine->On_Foot_State->Render)
     {
     if(Engine->On_Foot_State->Current_State == STATE_UNPAUSED)
     {
         Handle_Unpaused_Processing(Engine);
     }
+
+
+
     if(Engine->On_Foot_State->Connection_Status == 1)
     {
         network_update(Engine->On_Foot_State->SENC);

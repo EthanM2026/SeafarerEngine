@@ -65,6 +65,8 @@ struct _Title_State
 
     int Number_Of_TwoD_Sprite_Objects;
     struct _TwoD_Sprite_Object* Sprite_Objects;
+
+    double x = 0;
 };
 
 struct _Title_State* Create_Title_State();
@@ -76,4 +78,3 @@ void Process_Title_State(struct _Engine* Engine);
 
 
 #endif /* TITLE_H */
-

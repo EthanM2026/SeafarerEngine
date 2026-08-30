@@ -35,7 +35,7 @@ void Initialize_Cutscene_State(struct _Engine* Engine)
     glDepthFunc(GL_LESS);
     glMatrixMode(GL_PROJECTION);
     glLoadIdentity();
-    gluPerspective(45, 1.7777,1.0f, METER_CONVERSION * 40000);
+    gluPerspective(60, 1.7777,1.0f, METER_CONVERSION*10000);
     glMatrixMode(GL_MODELVIEW);
     glLoadIdentity();
     gluLookAt(40,40,40,0,0,0,0,0,1);

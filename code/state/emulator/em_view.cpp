@@ -57,5 +57,6 @@ void Input_Emulator_Viewer_State(struct _Engine* Engine, struct _Keypad Keypad)
 
 void Process_Emulator_Viewer_State(struct _Engine* Engine, struct _Audio_Chip* Audio_Chip)
 {
+
     Process_New_Computer_Cycles(Engine, Engine->Emulator_Viewer_State->Seat, 50, Audio_Chip);
 };

@@ -16,6 +16,7 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 #include "../../engine/physics/physics.h"
 #include "../../engine/graphics/new_model.h"
 #include "GLFW/glfw3.h"
+#include "../../uid.h"
 
 #define CURRENT_STATE_WALKING 1
 
@@ -45,6 +46,9 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 #define FPS_MODE 1
 #define TPS_MODE 2
 #define REAR_VIEW_MODE 3
+
+#define LOCATION_ON_FOOT 1
+#define LOCATION_SUBMARINE_VEHICLE 2
 
 //9.81m per 1 seconds
 //9.81m per 60 frames
@@ -107,6 +111,17 @@ struct _SE3_Model* Model;
 
 struct _Submarine_Object
 {
+    bool Port_Me_To_A_Display;
+    int Use_This_Seats_Display;
+
+double Damage;
+    double Entrance_Radius;
+    bool Is_A_Proxy;
+    int Proxy_ID;
+
+    int Maximum_Passengers;
+    int Number_Of_Passengers;
+    struct _Universal_ID Passenger_IDs[256];
 
         // --- Global State ---
 Vec3 fwd   = {0.0f, -1.0f, 0.0f};
@@ -304,6 +319,14 @@ struct _New_Player_Car
 
 struct _Player_Submarine
 {
+    bool Apply_Motion;
+    bool Apply_Gravity;
+
+    bool Is_On_A_Ship = false;
+    int On_This_Ship = -1;
+
+    struct _Universal_ID ID;
+
     float lastTime = 0.0f;
     float frameTime = 100000.0f;  // 100ms per frame
 
@@ -417,6 +440,13 @@ struct _Player_Submarine
     int Ship_ID;
 
     bool AffectedByGravity = true;
+
+    int Current_Location;
+    int Inside_This_Vehicle;
+    bool Visible;
+    bool Injurable;
+
+    int Am_This_Passenger;
 };
 
 struct _Torpedo
@@ -488,7 +518,7 @@ struct _Player_Submarine* Create_Player();
 void Initialize_On_Foot_Player(struct _Player_Submarine* On_Foot_Player, const char* Character_Filepath, float x, float y, float z);
 
 void Render_Player(struct _Engine* Engine);
-void Process_Player(struct _Player_Submarine* On_Foot_Player, struct _On_Foot_Region* On_Foot_Region, struct _On_Foot_Region_File* On_Foot_Region_File);
+void Process_Player(struct _Seafarer_Engine_Network_Client* SENC, int Connection_Status, struct _Engine* Engine, struct _Player_Submarine* On_Foot_Player, struct _On_Foot_Region* On_Foot_Region, struct _On_Foot_Region_File* On_Foot_Region_File);
 
 struct _New_Player_Submarine* Create_New_Player_Submarine();
 void Initialize_New_Player_Submarine(struct _Engine* Engine);
@@ -496,9 +526,9 @@ void Process_Player_Submarine(struct _Engine* Engine);
 
 void Handle_Player_Submarine_Inputs(struct _Engine* Engine, struct _Keypad Keypad);
 void Render_Player_Submarine(struct _Engine* Engine);
-void Generate_Player_Inputs(struct _Seafarer_Engine_Network_Client* SENC, int Connection_Status, struct _Player_Submarine* On_Foot_Player, struct _Keypad Keypad, struct _On_Foot_Region* On_Foot_Region, struct _On_Foot_Region_File* On_Foot_Region_File);
+void Generate_Player_Inputs(struct _Seafarer_Engine_Network_Client* SENC, int Connection_Status,struct _Engine* Engine, struct _Player_Submarine* On_Foot_Player, struct _Keypad Keypad, struct _On_Foot_Region* On_Foot_Region, struct _On_Foot_Region_File* On_Foot_Region_File);
 
-void Handle_Player_Inputs(struct _Seafarer_Engine_Network_Client* SENC, int Connection_Status, struct _Player_Submarine* On_Foot_Player, struct _Keypad Keypad, struct _On_Foot_Region* On_Foot_Region, struct _On_Foot_Region_File* On_Foot_Region_File);
+void Handle_Player_Inputs(struct _Engine* Engine, struct _Seafarer_Engine_Network_Client* SENC, int Connection_Status, struct _Player_Submarine* On_Foot_Player, struct _Keypad Keypad, struct _On_Foot_Region* On_Foot_Region, struct _On_Foot_Region_File* On_Foot_Region_File);
 
 void Write_Character(const char* Filename);
 void Load_Character(struct _Engine* Engine, const char* Filename);
@@ -526,10 +556,11 @@ void Render_Player_Car(struct _Engine* Engine, int Car_ID);
 
 
 struct _Submarine_Object* Create_Submarine_Object();
+void Initialize_On_Foot_Submarine_Object(struct _Submarine_Object* Submarine_Object, double x, double y, double z, double yaw, double pitch, double roll);
 void Initialize_Submarine_Object(struct _Engine* Engine, int Submarine_ID);
 void Process_Submarine_Object(struct _Engine* Engine, int Submarine_ID);
 
-void Handle_Submarine_Object_Inputs(struct _Engine* Engine, struct _Keypad Keypad, int Submarine_ID);
+void Handle_Submarine_Object_Inputs(struct _Engine* Engine, struct _Keypad Keypad, int ID);
 void Render_Submarine_Object(struct _Engine* Engine, int Submarine_ID);
 
 void rotate_axes(Vec3* v1, Vec3* v2, Vec3 axis, float angle);

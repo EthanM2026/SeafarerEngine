@@ -53,6 +53,28 @@ WE CAN DO THIS BECAUSE SUBMARINES ALREADY HAVE NO WINDOWS.
 
 #pragma pack(push, 1)
 
+#include "../../uid.h"
+
+struct _Vehicle
+{
+    char Model[256];
+    char Texture[256];
+    double x;
+    double y;
+    double z;
+    double Roll;
+    double Yaw;
+    double Pitch;
+    double Damage;
+    double Entrance_Radius;
+    bool Is_A_Proxy;
+    int Proxy_ID;
+
+    int Maximum_Passengers;
+    int Number_Of_Passengers;
+    struct _Universal_ID Passenger_IDs[256];
+};
+
 struct _Goalpost
 {
     char Model[256];
@@ -254,6 +276,8 @@ struct _On_Foot_Region_File
     int Number_Of_Viewscreens;
     int Number_Of_Characters;
     int Number_Of_Goalposts;
+    int Number_Of_Vehicles;
+    int Number_Of_Seats;
 
     int Offset_To_Vertical_Collision_Geometries;
     int Offset_To_Horizontal_Collision_Geometries;
@@ -264,6 +288,8 @@ struct _On_Foot_Region_File
     int Offset_To_Viewscreens;
     int Offset_To_Characters;
     int Offset_To_Goalposts;
+    int Offset_To_Vehicles;
+    int Offset_To_Seats;
 };
 
 struct _On_Foot_Region
@@ -281,6 +307,9 @@ struct _On_Foot_Region
     unsigned short Current_Net_Character;
     struct _Player_Submarine* Characters[32768];
     struct _Player_Submarine* Net_Characters[32768];
+
+    struct _Submarine_Object* Submarine_Vehicles[65536];
+    struct _Seat_Object* Seats[65536];
 };
 
 struct _Seat_Object
@@ -314,8 +343,69 @@ struct _Seat_Object
     double Screen_y4;
     double Screen_z4;
 
+    bool TV_Mode;
+
+    bool TV_Mode_Switch_Was_Toggled;
+
     struct _New_Computer* New_Computer;
 };
+
+
+
+
+struct _Seat
+{
+    char Model[256];
+    char Texture[256];
+
+    double x;
+    double y;
+    double z;
+
+    double x1;
+    double y1;
+    double z1;
+
+    double x2;
+    double y2;
+    double z2;
+
+    double Eye_Offset_x;
+    double Eye_Offset_y;
+    double Eye_Offset_z;
+
+    int Is_A_Drivers_Seat;
+    int Seat_Contains_Console;
+
+    double Screen_x1;
+    double Screen_y1;
+    double Screen_z1;
+
+    double Screen_x2;
+    double Screen_y2;
+    double Screen_z2;
+
+    double Screen_x3;
+    double Screen_y3;
+    double Screen_z3;
+
+    double Screen_x4;
+    double Screen_y4;
+    double Screen_z4;
+
+    unsigned char Red_Color_Balance;
+    unsigned char Green_Color_Balance;
+    unsigned char Blue_Color_Balance;
+
+    bool Color_Mode;
+
+    bool Power_State;
+};
+
+
+
+
+
 
 struct _Ship
 {
@@ -334,6 +424,8 @@ struct _Ship_Object
 struct _On_Foot_State
 {
     unsigned char Mode;
+
+    unsigned long Total_Cycles;
 
     double Maximum_X_Coordinate;
     double Maximum_Y_Coordinate;
@@ -435,6 +527,8 @@ struct _On_Foot_State
     struct _Timer* Go_Back_Timer;
     bool Go_Back_Timer_Was_Triggered;
     bool Render;
+
+    GLuint fbo, textureColorBuffer, rbo;
 };
 
 void Spawn_Character(struct _On_Foot_Region* On_Foot_Region, int ID, double x, double y, double z);
@@ -445,9 +539,9 @@ void Destroy_On_Foot_State(struct _Engine* Engine);
 
 void Initialize_On_Foot_State(struct _Engine* Engine);
 
-void Render_On_Foot_State(struct _Engine* Engine);
-void Input_On_Foot_State(struct _Engine* Engine, struct _Keypad Keypad);
-void Process_On_Foot_State(struct _Engine* Engine);
+void Render_On_Foot_State(struct _Engine* Engine,struct _Audio_Chip* Audio_Chip);
+void Input_On_Foot_State(struct _Engine* Engine, struct _Keypad Keypad,struct _Audio_Chip* Audio_Chip);
+void Process_On_Foot_State(struct _Engine* Engine,struct _Audio_Chip* Audio_Chip);
 
 void updateCameraVectors(struct _Engine* Engine);
 void mouseMotion(struct _Engine* Engine, double x, double y,struct _Keypad Keypad);
@@ -456,6 +550,6 @@ void Write_On_Foot_Region(const char* Filename);
 void Load_On_Foot_Region(struct _Engine* Engine, struct _On_Foot_Region* On_Foot_Region, struct _On_Foot_Region_File* On_Foot_Region_File, const char* Filename, double Z_Offset);
 
 void Door_Collision_Detection(struct _Player_Submarine* On_Foot_Player, struct _On_Foot_Region* On_Foot_Region, struct _On_Foot_Region_File* On_Foot_Region_File);
-
+void Submarine_Vehicle_Collision_Detection(struct _Player_Submarine* On_Foot_Player, struct _On_Foot_Region* On_Foot_Region, struct _On_Foot_Region_File* On_Foot_Region_File);
 #endif /* CUTSCENE_H */
 //NEED A SEPARAT FUNCTION TO INCREMENT EACH FRAME!

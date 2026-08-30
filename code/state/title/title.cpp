@@ -32,6 +32,8 @@ void Initialize_Title_State(struct _Engine* Engine)
     Engine->Title_State->Demo = Create_Image();
     Load_Image(Engine->Title_State->Demo,"resources/artwork/gui/demo.sei");
 
+    Write_On_Foot_Region("resources/data/arcs/the_days_of_nova/testregion");
+
 
     Mix_HaltMusic();
   //  Write_Ship("resources/data/ships/test_ship_details.det");
@@ -58,8 +60,8 @@ void Initialize_Title_State(struct _Engine* Engine)
     switch(Engine->Settings.Current_Language_ID)
     {
         case ID_LANGUAGE_ENGLISH:
-           // BMPtoSEI("resources/artwork/gui/english/title.bmp","resources/artwork/gui/english/title.sei");
-           // BMPtoSEI("resources/artwork/gui/english/title_trm.bmp","resources/artwork/gui/english/title_trm.sei");
+           // ////BMPtoSEI("resources/artwork/gui/english/title.bmp","resources/artwork/gui/english/title.sei");
+           // ////BMPtoSEI("resources/artwork/gui/english/title_trm.bmp","resources/artwork/gui/english/title_trm.sei");
 
         break;
     }
@@ -69,7 +71,7 @@ void Initialize_Title_State(struct _Engine* Engine)
     Engine->Title_State->Text = Create_Image();
 
     char Text[256];
-    sprintf(Text, "Beta Build 11873");
+    sprintf(Text, "Beta Build 12195");
 
     Initialize_Text_Image(Engine->Text_Engine,Engine->Title_State->Text,Text,17,17+(17*17),64);
 
@@ -88,7 +90,7 @@ Engine->Title_State->Boom = Mix_LoadWAV( "resources/tracks_and_sounds/general/so
     glDepthFunc(GL_LESS);
     glMatrixMode(GL_PROJECTION);
     glLoadIdentity();
-    gluPerspective(45, 1.7777,1.0f, METER_CONVERSION * 32000);
+    gluPerspective(60, 1.7777,1.0f, METER_CONVERSION*10000);
     glMatrixMode(GL_MODELVIEW);
     glLoadIdentity();
     gluLookAt(4,-4,-4,0,0,0,0,0,1);
@@ -120,8 +122,10 @@ Engine->Title_State->Boom = Mix_LoadWAV( "resources/tracks_and_sounds/general/so
 
     Engine->Title_State->Sonichu_Model_Engine_Trail = Create_SE3_Model();
     Load_SE3_Model(Engine->Title_State->Sonichu_Model_Engine_Trail, "resources/models/title_sonichu_engine_trail.se3");
-    BMPtoSEI("resources/models/skyboxnebula.bmp", "resources/models/texture_skybox_nebula.sei");
+    ////BMPtoSEI("resources/models/skyboxnebula.bmp", "resources/models/texture_skybox_nebula.sei");
     Load_SE3_Texture(Engine->Title_State->Sonichu_Model_Engine_Trail, "resources/models/title_sonichu_trail.sei");
+
+    Engine->Title_State->x = 639;
 
     Engine->Title_State->Sonichu_Model_Skybox = Create_SE3_Model();
     Load_SE3_Model(Engine->Title_State->Sonichu_Model_Skybox, "resources/models/title_sonichu_skybox.se3");
@@ -129,12 +133,12 @@ Engine->Title_State->Boom = Mix_LoadWAV( "resources/tracks_and_sounds/general/so
 
     Engine->Title_State->Sonichu_Model_Skybox_Light = Create_SE3_Model();
     Load_SE3_Model(Engine->Title_State->Sonichu_Model_Skybox_Light, "resources/models/title_sonichu_skybox_light.se3");
-    //BMPtoSEI("resources/models/title_background_3.bmp","resources/models/title_sonichu_skybox_light.sei");
+    //////BMPtoSEI("resources/models/title_background_3.bmp","resources/models/title_sonichu_skybox_light.sei");
     Load_SE3_Texture(Engine->Title_State->Sonichu_Model_Skybox_Light, "resources/models/title_sonichu_skybox_light.sei");
 
     Engine->Title_State->Press_Enter = Create_Image();
-    BMPtoSEI("resources/artwork/gui/english/press_enter.bmp","resources/artwork/gui/english/press_enter.sei");
-    BMPtoSEI("resources/artwork/gui/english/press_enter.bmp","resources/artwork/gui/english/press_button.sei");
+    ////BMPtoSEI("resources/artwork/gui/english/press_enter.bmp","resources/artwork/gui/english/press_enter.sei");
+    ////BMPtoSEI("resources/artwork/gui/english/press_enter.bmp","resources/artwork/gui/english/press_button.sei");
 
     //if(Engine->Control_Mode == CONTROL_MODE_KEYBOARD_AND_MOUSE)
     //{
@@ -191,8 +195,8 @@ void Render_Title_State(struct _Engine* Engine)
         glPushMatrix();
         glTranslatef(Engine->Title_State->Sonichu_Forwards,0,0);
         //glDisable(GL_LIGHT2);
-        Render_SE3_Model(Engine->Title_State->Sonichu_Model_Skybox,0,0,0,0,0,0,0,false,1,1,1,false);
-        Render_SE3_Model(Engine->Title_State->Sonichu_Model_Skybox_Light,0,0,0,0,0,0,0,false,1,1,1,false);
+        //Render_SE3_Model(Engine->Title_State->Sonichu_Model_Skybox,0,0,0,0,0,0,0,false,1,1,1,false);
+        //Render_SE3_Model(Engine->Title_State->Sonichu_Model_Skybox_Light,0,0,0,0,0,0,0,false,1,1,1,false);
         //glEnable(GL_LIGHT2);
         Render_SE3_Model(Engine->Title_State->Sonichu_Model,0,0,0,0,0,0,0,false,1,1,1,false);
         //Render_SE3_Model(Engine->Title_State->Sonichu_Model_Engine_Trail,0,0,0,0,0,0,0,false,1,1,1,false);
@@ -217,7 +221,8 @@ void Render_Title_State(struct _Engine* Engine)
             Mix_PlayMusic(Engine->Title_State->Track, 0);
             Engine->Title_State->Title_Music_Played = true;
         }
-        Render_Image_With_Vertex_Color(Engine->Title_State->Background, 0,0,1, 1,1,1);
+        Render_Image_With_Vertex_Color(Engine->Title_State->Background, Engine->Title_State->x,0,1, 1,1,1);
+        Render_Image_With_Vertex_Color(Engine->Title_State->Background, Engine->Title_State->x-639,0,1, 1,1,1);
         Render_Image_With_Vertex_Color(Engine->Title_State->Text, 8,360-64-8,1, 1,1,1);
         Render_Image_At_Size(Engine->Title_State->Logo, 32,30, 576,184,1);
 
@@ -297,5 +302,12 @@ void Process_Title_State(struct _Engine* Engine)
     {
         Engine->Title_State->Light -= 0.1;
     }
+
+    Engine->Title_State->x -= 0.1;
+    if(Engine->Title_State->x <= 0)
+    {
+        Engine->Title_State->x = 639;
+    }
+
     }
 }

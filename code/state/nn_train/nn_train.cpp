@@ -5,7 +5,6 @@ void Initialize_Fake_Submarine(struct _Submarine_Object* Submarine)
 {
     Submarine->Models[0] = Create_SE3_Model();
         Load_SE3_Model(Submarine->Models[0], "resources/data/submarines/car2.se3");
-        BMPtoSEI("raydrone.bmp","raydrone.sei");
         Load_SE3_Texture(Submarine->Models[0], "raydrone.sei");
 
 Submarine->Current_Orders_Issued = 0;
@@ -309,7 +308,7 @@ const float FOG_COLOR[4] = {0.0f, 0.0f, 0.1f, 1.0f};
 
      glMatrixMode(GL_PROJECTION);
         glLoadIdentity();
-            gluPerspective(60, 1.7777,1.0f, METER_CONVERSION * 75000);
+            gluPerspective(60, 1.7777,1.0f, METER_CONVERSION*10000);
         glCullFace(GL_BACK); // Temporarily flip culling
 
 
@@ -329,9 +328,7 @@ const float FOG_COLOR[4] = {0.0f, 0.0f, 0.1f, 1.0f};
 
 void Process_NN_Plane(struct _Engine* Engine)
 {
-    Engine->Neural_Network_Training_State->Submarine->plane_x += Engine->Neural_Network_Training_State->Submarine->Forward_Vector.x * Engine->Neural_Network_Training_State->Submarine->Throttle;
-    Engine->Neural_Network_Training_State->Submarine->plane_y += Engine->Neural_Network_Training_State->Submarine->Forward_Vector.y * Engine->Neural_Network_Training_State->Submarine->Throttle;
-    Engine->Neural_Network_Training_State->Submarine->plane_z += Engine->Neural_Network_Training_State->Submarine->Forward_Vector.z * Engine->Neural_Network_Training_State->Submarine->Throttle;
+
 }
 
 

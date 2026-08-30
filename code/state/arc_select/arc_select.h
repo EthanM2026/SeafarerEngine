@@ -163,6 +163,7 @@ struct _Arc_Select_State
     struct _Image* Title_Bar;
     struct _Timer* Timer;
     bool Go_Back_To_Main_Menu;
+    double Title_Bar_Offset;
 };
 
 struct _Arc_Select_State* Create_Arc_Select_State();

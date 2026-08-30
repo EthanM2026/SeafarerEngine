@@ -67,6 +67,8 @@ struct _Main_Menu_State
 
     struct _Message_Box* Message;
     int Mini_State;
+
+    double Background_x;
 };
 
 struct _Main_Menu_State* Create_Main_Menu_State();

@@ -568,7 +568,7 @@ void New_Process_Steps(struct _Engine* Engine)
             printf("Loading Region\n");
             Engine->On_Foot_State = Create_On_Foot_State();
             Initialize_On_Foot_State(Engine);
-            //Load_Region(Engine, Engine->Current_Region_Filepath);
+            Load_On_Foot_Region(Engine,&Engine->On_Foot_State->On_Foot_Region, &Engine->On_Foot_State->On_Foot_Region_File, Engine->Current_Region_Filepath,0);
             Engine->Current_Step += 1;
             Engine->Current_State = STATE_ON_FOOT;
         break;
