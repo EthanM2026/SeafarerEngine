@@ -528,25 +528,22 @@ void Draw_TV_Vertices(GLuint Texture_ID, double x1, double y1, double z1,double 
 };
 
 void setupFBO(struct _Engine* Engine) {
-   // glGenFramebuffers(1, &Engine->On_Foot_State->fbo);
-   // glBindFramebuffer(GL_FRAMEBUFFER, Engine->On_Foot_State->fbo);
+    glGenFramebuffers(1, &Engine->On_Foot_State->fbo);
+    glBindFramebuffer(GL_FRAMEBUFFER, Engine->On_Foot_State->fbo);
 
-   // glGenTextures(1, &Engine->On_Foot_State->textureColorBuffer);
-   // glBindTexture(GL_TEXTURE_2D, Engine->On_Foot_State->textureColorBuffer);
-  //  glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, 256,256, 0, GL_RGB, GL_UNSIGNED_BYTE, NULL);
-  //  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
- //   glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-  //  glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, Engine->On_Foot_State->textureColorBuffer, 0);
+    glGenTextures(1, &Engine->On_Foot_State->textureColorBuffer);
+    glBindTexture(GL_TEXTURE_2D, Engine->On_Foot_State->textureColorBuffer);
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, 256,256, 0, GL_RGB, GL_UNSIGNED_BYTE, NULL);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+    glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, Engine->On_Foot_State->textureColorBuffer, 0);
 
- //   glGenRenderbuffers(1, &Engine->On_Foot_State->rbo);
-  //  glBindRenderbuffer(GL_RENDERBUFFER, Engine->On_Foot_State->rbo);
-  //  glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH24_STENCIL8, 256,256);
-  //  glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_STENCIL_ATTACHMENT, GL_RENDERBUFFER, Engine->On_Foot_State->rbo);
+    glGenRenderbuffers(1, &Engine->On_Foot_State->rbo);
+   glBindRenderbuffer(GL_RENDERBUFFER, Engine->On_Foot_State->rbo);
+    glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH24_STENCIL8, 256,256);
+    glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_STENCIL_ATTACHMENT, GL_RENDERBUFFER, Engine->On_Foot_State->rbo);
 
-  //  if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
-   //     //printf("Framebuffer Error!\n");
-//
-  //  glBindFramebuffer(GL_FRAMEBUFFER, 0);
+    glBindFramebuffer(GL_FRAMEBUFFER, 0);
 }
 
 
@@ -558,7 +555,7 @@ void Draw_Camera_Scene(struct _Engine* Engine)
   //  glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
   //  glMatrixMode(GL_PROJECTION);
   //  glLoadIdentity();
-  //  gluPerspective(45.0f, (float)TEX_WIDTH / (float)TEX_HEIGHT, 1.0f, 100.0f);
+  //  gluPerspective(60.0f, (float)TEX_WIDTH / (float)TEX_HEIGHT, 1.0f, 100.0f);
   //  glMatrixMode(GL_MODELVIEW);
   //  glLoadIdentity();
   //  gluLookAt(10.0, 10.0, 10.0,  // Eye
@@ -577,7 +574,7 @@ void Draw_Camera_Scene(struct _Engine* Engine)
 
   //  glMatrixMode(GL_PROJECTION);
    // glLoadIdentity();
-   // gluPerspective(45.0f, (float)640 / (float)360, 1.0f, 100.0f);
+   // gluPerspective(60.0f, (float)640 / (float)360, 1.0f, 100.0f);
 };
 
 

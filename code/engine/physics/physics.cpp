@@ -301,6 +301,7 @@ bool Test_Capsule_And_Mesh_Collision(struct _Capsule_Collider* Capsule_Collider,
 struct _Preloaded_Collision_Mesh* Create_Preloaded_Collision_Mesh(const char* Filename, double x, double y, double z)
 {
     struct _SE3_Model* Model = Create_SE3_Model();
+    printf("Loading mesh\n");
     Load_SE3_Model(Model,Filename);
 
 
@@ -315,7 +316,9 @@ struct _Preloaded_Collision_Mesh* Create_Preloaded_Collision_Mesh(const char* Fi
 
   Mesh->x = 0;
   Mesh->y = 0;
-  Mesh->z = 0;
+  Mesh->z = z;
+
+  printf("Created preloaded Collision Mesh at %f %f %f",x,y,z);
 
   Mesh->Number_Of_Triangles = Model->Number_Of_Triangles;
   Mesh->Triangles = (_Triangle*)calloc(1,Mesh->Number_Of_Triangles*sizeof(_Triangle));

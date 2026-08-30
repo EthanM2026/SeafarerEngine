@@ -19,7 +19,7 @@ void Write_Weapon(const char* Filename)
     Weapon.Current_Ammo = 10;
     Weapon.Allowed_To_Reload = 1;
     Weapon.Reload_Speed = 1.106;
-    Weapon.Ammo_Mode = TORPEDO_MODE_KNIFE;
+    Weapon.Ammo_Mode = TORPEDO_MODE_PROJECTILE;
     Weapon.Ammo_Lifetime_In_Seconds = 1;
     Weapon.Ammo_Maximum_Distance_In_Meters = 100;
     Weapon.Ammo_Moving_Through_Space_Sound_ID = -1;
@@ -186,10 +186,13 @@ void Process_Weapon_Round(struct _Engine* Engine, int ID)
             //printf("Distance: %f\n", u);
             if(u <= METER_CONVERSION * 1 && !Engine->On_Foot_State->On_Foot_Region.Characters[j]->Dead)
             {
+                if(Engine->On_Foot_State->On_Foot_Region.Characters[j]->Injurable)
+                {
                 Engine->On_Foot_State->On_Foot_Region.Characters[j]->Current_Health -= 10;
                 printf("did damage\n");
                 printf("health: %f\n", Engine->On_Foot_State->On_Foot_Region.Characters[j]->Current_Health);
                 Engine->On_Foot_State->Weapon_Round_Objects[ID]->Dead = true;
+                }
 
             }
         }
@@ -202,10 +205,13 @@ void Process_Weapon_Round(struct _Engine* Engine, int ID)
                  //   printf("Distance: %f\n", u);
                     if(u <= METER_CONVERSION * 1 && !Engine->On_Foot_State->Ship_Objects[m]->Ship_Interior.Characters[j]->Dead)
                     {
+                        if(Engine->On_Foot_State->On_Foot_Region.Characters[j]->Injurable)
+                        {
                         Engine->On_Foot_State->Ship_Objects[m]->Ship_Interior.Characters[j]->Current_Health -= 10;
                         printf("did damage\n");
                         printf("health: %f\n", Engine->On_Foot_State->Ship_Objects[m]->Ship_Interior.Characters[j]->Current_Health);
                         Engine->On_Foot_State->Weapon_Round_Objects[ID]->Dead = true;
+                        }
                     }
                 }
         }

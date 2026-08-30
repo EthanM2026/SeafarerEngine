@@ -63,16 +63,7 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 #define SAMPLING_RATE 44100
 #define BUFFER_SIZE 512
 
-struct _Universal_ID
-{
-    char Name[64];
-    unsigned long Category;
-    unsigned long Subcategory;
-    unsigned long Variant;
-    unsigned long ID;
-};
-
-    #define SAMPLE_RATE 44100
+#define SAMPLE_RATE 44100
 #define AMP_SCALE 0.3f // Prevents clipping when mixing 3 channels
 
 // SID Waveform types
@@ -178,6 +169,12 @@ struct _Keypad
     bool Keyboard_G;
     bool Keyboard_H;
 
+    bool Keyboard_R;
+    bool Keyboard_T;
+
+    bool Keyboard_Y;
+    bool Keyboard_U;
+
     bool Keyboard_W;
 
     double Mouse_X;
@@ -225,6 +222,10 @@ struct _Engine
     Mix_Chunk* USND_Vortex;
 
     Mix_Chunk* USND_Computer_Beep;
+
+    Mix_Chunk* USND_Power_On;
+
+    Mix_Chunk* USND_Powered;
 
 	struct _CURRENT_CSS_New_Arc_Level_Header* New_Arc_Level_Headers; //UNDER CONSTRUCTION
 	struct _CURRENT_CSS_New_Arc_Level_Container* Engine_Arc_Level_Container; //UNDER CONSTRUCTION

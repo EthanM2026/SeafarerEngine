@@ -1744,7 +1744,9 @@ void Turn_Computer_Off(struct _Engine* Engine, struct _Seat_Object* Seat)
 
 void Turn_Computer_On(struct _Engine* Engine, struct _Seat_Object* Seat)
 {
-   Seat->New_Computer->Processor.Audio_Processor.Instruments_Bank = 0;
+    Mix_PlayChannel(-1, Engine->USND_Power_On, 0);
+
+    Seat->New_Computer->Processor.Audio_Processor.Instruments_Bank = 0;
 
     Seat->New_Computer->Processor.Audio_Processor.Track_Bank = 0;
     Seat->New_Computer->Processor.Audio_Processor.Track_Address = 0;
@@ -1757,10 +1759,8 @@ void Turn_Computer_On(struct _Engine* Engine, struct _Seat_Object* Seat)
     Seat->New_Computer->Processor.Audio_Processor.Tracking_On = false;
 
     //sid_gate_off(Audio_Chip,0);
-   // sid_gate_off(Audio_Chip,1);
-  //  sid_gate_off(Audio_Chip,2);
-
-
+    //sid_gate_off(Audio_Chip,1);
+    //sid_gate_off(Audio_Chip,2);
 
     Seat->New_Computer->Power_State = true;
     Seat->New_Computer->Processor.Processor_Halted = false;
@@ -1845,6 +1845,8 @@ void Turn_Computer_On(struct _Engine* Engine, struct _Seat_Object* Seat)
     Seat->New_Computer->Processor.Greater_Flag = 0;
 
     Load_Program(Seat, "test.rom");
+
+    Mix_PlayChannel(-1, Engine->USND_Powered, -1);
 };
 
 
@@ -1852,76 +1854,76 @@ void Render_New_Computer(struct _Engine* Engine, struct _Seat_Object* Seat)
 {
     if(!Seat->New_Computer->Processor.Processor_Halted && Seat->New_Computer->Power_State)
     {
-    glBindTexture(GL_TEXTURE_2D, Seat->New_Computer->Texture_ID);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+        glBindTexture(GL_TEXTURE_2D, Seat->New_Computer->Texture_ID);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 
-    int in = 0;
-    int r = 0;
-    //Convert Video card memory to 24-bit color
-    unsigned char Red_Value;
-    unsigned char Green_Value;
-    unsigned char Blue_Value;
+        int in = 0;
+        int r = 0;
+        //Convert Video card memory to 24-bit color
+        unsigned char Red_Value;
+        unsigned char Green_Value;
+        unsigned char Blue_Value;
 
-    if(Seat->New_Computer->Color_Mode)
-    {
-    for(int j = 0; j < 65536; j++)
-    {
+        if(Seat->New_Computer->Color_Mode)
+        {
+        for(int j = 0; j < 65536; j++)
+        {
 
-            Red_Value = (Seat->New_Computer->Front_Video_Buffer[in] >> 0) & 0x03;
-            Green_Value = (Seat->New_Computer->Front_Video_Buffer[in] >> 2) & 0x03;
-            Blue_Value = (Seat->New_Computer->Front_Video_Buffer[in] >> 4) & 0x03;
-            //Red_Value =  >> 0;
+                Red_Value = (Seat->New_Computer->Front_Video_Buffer[in] >> 0) & 0x03;
+                Green_Value = (Seat->New_Computer->Front_Video_Buffer[in] >> 2) & 0x03;
+                Blue_Value = (Seat->New_Computer->Front_Video_Buffer[in] >> 4) & 0x03;
+                //Red_Value =  >> 0;
 
-            //memcpy(&Seat->New_Computer->RGB_Canvas[r], &Seat->New_Computer->Front_Video_Buffer[in], 1);
-            //memcpy(&Seat->New_Computer->RGB_Canvas[r+1], &Seat->New_Computer->Front_Video_Buffer[in], 1);
-            //memcpy(&Seat->New_Computer->RGB_Canvas[r+2], &Seat->New_Computer->Front_Video_Buffer[in], 1);
+                //memcpy(&Seat->New_Computer->RGB_Canvas[r], &Seat->New_Computer->Front_Video_Buffer[in], 1);
+                //memcpy(&Seat->New_Computer->RGB_Canvas[r+1], &Seat->New_Computer->Front_Video_Buffer[in], 1);
+                //memcpy(&Seat->New_Computer->RGB_Canvas[r+2], &Seat->New_Computer->Front_Video_Buffer[in], 1);
 
-            memcpy(&Seat->New_Computer->RGB_Canvas[r], &Blue_Value, 1);
-            memcpy(&Seat->New_Computer->RGB_Canvas[r+1], &Green_Value, 1);
-            memcpy(&Seat->New_Computer->RGB_Canvas[r+2], &Red_Value, 1);
+                memcpy(&Seat->New_Computer->RGB_Canvas[r], &Blue_Value, 1);
+                memcpy(&Seat->New_Computer->RGB_Canvas[r+1], &Green_Value, 1);
+                memcpy(&Seat->New_Computer->RGB_Canvas[r+2], &Red_Value, 1);
 
-            Seat->New_Computer->RGB_Canvas[r]*=255;
-            Seat->New_Computer->RGB_Canvas[r+1]*=255;
-            Seat->New_Computer->RGB_Canvas[r+2]*=255;
+                Seat->New_Computer->RGB_Canvas[r]*=255;
+                Seat->New_Computer->RGB_Canvas[r+1]*=255;
+                Seat->New_Computer->RGB_Canvas[r+2]*=255;
 
-        in += 1;
-        r += 3;
-    }
-    }
+            in += 1;
+            r += 3;
+        }
+        }
 
-    if(!Seat->New_Computer->Color_Mode)
-    {
-    for(int j = 0; j < 65536; j++)
-    {
+        if(!Seat->New_Computer->Color_Mode)
+        {
+        for(int j = 0; j < 65536; j++)
+        {
 
-            Red_Value = (Seat->New_Computer->Front_Video_Buffer[in] >> 0) & 0x03;
-            Green_Value = (Seat->New_Computer->Front_Video_Buffer[in] >> 2) & 0x03;
-            Blue_Value = (Seat->New_Computer->Front_Video_Buffer[in] >> 4) & 0x03;
-            //Red_Value =  >> 0;
+                Red_Value = (Seat->New_Computer->Front_Video_Buffer[in] >> 0) & 0x03;
+                Green_Value = (Seat->New_Computer->Front_Video_Buffer[in] >> 2) & 0x03;
+                Blue_Value = (Seat->New_Computer->Front_Video_Buffer[in] >> 4) & 0x03;
+                //Red_Value =  >> 0;
 
-            memcpy(&Seat->New_Computer->RGB_Canvas[r], &Seat->New_Computer->Front_Video_Buffer[in], 1);
-            memcpy(&Seat->New_Computer->RGB_Canvas[r+1], &Seat->New_Computer->Front_Video_Buffer[in], 1);
-            memcpy(&Seat->New_Computer->RGB_Canvas[r+2], &Seat->New_Computer->Front_Video_Buffer[in], 1);
+                memcpy(&Seat->New_Computer->RGB_Canvas[r], &Seat->New_Computer->Front_Video_Buffer[in], 1);
+                memcpy(&Seat->New_Computer->RGB_Canvas[r+1], &Seat->New_Computer->Front_Video_Buffer[in], 1);
+                memcpy(&Seat->New_Computer->RGB_Canvas[r+2], &Seat->New_Computer->Front_Video_Buffer[in], 1);
 
-            //memcpy(&Seat->New_Computer->RGB_Canvas[r], &Blue_Value, 1);
-           // memcpy(&Seat->New_Computer->RGB_Canvas[r+1], &Green_Value, 1);
-           // memcpy(&Seat->New_Computer->RGB_Canvas[r+2], &Red_Value, 1);
+                //memcpy(&Seat->New_Computer->RGB_Canvas[r], &Blue_Value, 1);
+               // memcpy(&Seat->New_Computer->RGB_Canvas[r+1], &Green_Value, 1);
+               // memcpy(&Seat->New_Computer->RGB_Canvas[r+2], &Red_Value, 1);
 
-            Seat->New_Computer->RGB_Canvas[r]*=Seat->New_Computer->Blue_Color_Balance;
-            Seat->New_Computer->RGB_Canvas[r+1]*=Seat->New_Computer->Green_Color_Balance;
-            Seat->New_Computer->RGB_Canvas[r+2]*=Seat->New_Computer->Red_Color_Balance;
-
-
-        in += 1;
-        r += 3;
-    }
-    }
+                Seat->New_Computer->RGB_Canvas[r]*=Seat->New_Computer->Blue_Color_Balance;
+                Seat->New_Computer->RGB_Canvas[r+1]*=Seat->New_Computer->Green_Color_Balance;
+                Seat->New_Computer->RGB_Canvas[r+2]*=Seat->New_Computer->Red_Color_Balance;
 
 
+            in += 1;
+            r += 3;
+        }
+        }
 
-    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, 256,256, 0, GL_RGB, GL_UNSIGNED_BYTE, Seat->New_Computer->RGB_Canvas);
-    glEnable(GL_TEXTURE_2D);
+
+
+        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, 256,256, 0, GL_RGB, GL_UNSIGNED_BYTE, Seat->New_Computer->RGB_Canvas);
+        glEnable(GL_TEXTURE_2D);
     }
 };
 

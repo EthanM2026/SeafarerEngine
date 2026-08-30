@@ -751,9 +751,9 @@ void Load_SE3_Model(struct _SE3_Model* Model, const char* Filename)
     if(!file)
     {
         file = fopen("resources/artwork/placeholders/no_model.se3", "rb");
-        //printf("ERROR: COULD NOT LOAD FILE: ");
-        //printf(Filename);
-        //printf("\n");
+        printf("\n ERROR: COULD NOT LOAD FILE: ");
+        printf(Filename);
+        printf("ERROR!\n");
     }
 
     unsigned char header[68];
