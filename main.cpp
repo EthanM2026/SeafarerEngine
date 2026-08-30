@@ -134,6 +134,51 @@ void key_callback(GLFWwindow* window, int key, int scancode, int action, int mod
     	}
 
 
+    	if(key == GLFW_KEY_R && action == GLFW_PRESS)
+    	{
+        	Keypad.Keyboard_R = true;
+    	}
+
+    	else if(key == GLFW_KEY_R && action == GLFW_RELEASE)
+    	{
+        	Keypad.Keyboard_R = false;
+    	}
+
+    	if(key == GLFW_KEY_T && action == GLFW_PRESS)
+    	{
+        	Keypad.Keyboard_T = true;
+    	}
+
+    	else if(key == GLFW_KEY_T && action == GLFW_RELEASE)
+    	{
+        	Keypad.Keyboard_T = false;
+    	}
+
+
+
+
+    	if(key == GLFW_KEY_Y && action == GLFW_PRESS)
+    	{
+        	Keypad.Keyboard_Y = true;
+    	}
+
+    	else if(key == GLFW_KEY_Y && action == GLFW_RELEASE)
+    	{
+        	Keypad.Keyboard_Y = false;
+    	}
+
+
+    	if(key == GLFW_KEY_U && action == GLFW_PRESS)
+    	{
+        	Keypad.Keyboard_U = true;
+    	}
+
+    	else if(key == GLFW_KEY_U && action == GLFW_RELEASE)
+    	{
+        	Keypad.Keyboard_U = false;
+    	}
+
+
 
     	if(key == GLFW_KEY_W && action == GLFW_PRESS)
     	{
@@ -519,9 +564,9 @@ int main(int argc, char** argv)
     		break;
 
     		case STATE_ON_FOOT:
-    		Render_On_Foot_State(Engine);
-            Input_On_Foot_State(Engine, Keypad);
-    		Process_On_Foot_State(Engine);
+    		Render_On_Foot_State(Engine, Audio_Chip);
+            Input_On_Foot_State(Engine, Keypad, Audio_Chip);
+    		Process_On_Foot_State(Engine, Audio_Chip);
     		break;
 
     		case STATE_INTERIM:
